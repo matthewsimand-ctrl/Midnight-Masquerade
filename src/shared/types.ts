@@ -1,0 +1,83 @@
+export type Alliance = "Majority" | "Minority";
+export type CardType = "Image" | "Word";
+
+export interface Card {
+  id: string;
+  type: CardType;
+  content: string;
+}
+
+export interface Player {
+  id: string;
+  name: string;
+  avatar: string;
+  alliance?: Alliance;
+  hand: Card[];
+  isEliminated: boolean;
+  journal: JournalEntry[];
+  ready: boolean;
+  isBot: boolean;
+}
+
+export interface JournalEntry {
+  round: number;
+  partnerId: string;
+  partnerName: string;
+  receivedCard: Card;
+}
+
+export type GamePhase = "Lobby" | "RoleReveal" | "Dealing" | "MotifReveal" | "DancePairing" | "PrivateDance" | "GossipSalon" | "EliminationVote" | "GameOver";
+
+export interface GameState {
+  roomId: string;
+  hostId: string;
+  players: Record<string, Player>;
+  phase: GamePhase;
+  round: number;
+  maxRounds: number;
+  allianceMotifs: Record<string, string>;
+  allianceKeywords: Record<string, string[]>;
+  minorityPenaltyRound: boolean;
+  dancePairs: Record<string, string>;
+  danceRequests: Record<string, string>;
+  sharedCards: Record<string, Card>;
+  votes: Record<string, string>;
+  eliminatedThisRound: string | null;
+  winner: Alliance | null;
+  remainingMajority: number;
+  remainingMinority: number;
+}
+
+export interface ClientPlayer {
+  id: string;
+  name: string;
+  avatar: string;
+  isEliminated: boolean;
+  ready: boolean;
+  isMe: boolean;
+  isBot: boolean;
+  isHost: boolean;
+  alliance?: Alliance;
+  hand?: Card[];
+  journal?: JournalEntry[];
+}
+
+export interface ClientGameState {
+  roomId: string;
+  hostId: string;
+  players: Record<string, ClientPlayer>;
+  phase: GamePhase;
+  round: number;
+  currentMotif: string | null;
+  dancePairs: Record<string, string>;
+  danceRequests: Record<string, string>;
+  sharedCards: Record<string, Card>;
+  votes: Record<string, string>;
+  eliminatedThisRound: string | null;
+  winner: Alliance | null;
+  remainingMajority: number;
+  remainingMinority: number;
+  allPairsShared?: boolean;
+}
+
+
