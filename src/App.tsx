@@ -21,25 +21,32 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
 
   return (
     <div className="min-h-screen bg-[var(--color-midnight)] text-[var(--color-ivory)] flex flex-col items-center justify-center font-sans relative overflow-hidden">
-      <div className="velvet-texture"></div>
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 z-0 opacity-40 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(/homescreen.jpg)' }}
+      ></div>
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-[var(--color-midnight)]/50 via-[var(--color-midnight)]/70 to-[var(--color-midnight)]"></div>
+      
+      <div className="velvet-texture z-0"></div>
       
       {/* Chandelier SVG */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-80 animate-pulse-glow">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-80 animate-pulse-glow z-0">
         <svg width="200" height="150" viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M100 0L105 40L150 50L110 70L120 120L100 90L80 120L90 70L50 50L95 40L100 0Z" fill="var(--color-gold)" opacity="0.3"/>
           <circle cx="100" cy="70" r="20" fill="var(--color-gold)" opacity="0.5"/>
         </svg>
       </div>
 
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[var(--color-gold)] rounded-full blur-[120px] opacity-10 pointer-events-none"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[var(--color-gold)] rounded-full blur-[120px] opacity-10 pointer-events-none z-0"></div>
 
       <div className="z-10 flex flex-col items-center max-w-[480px] w-full px-6 animate-bloom">
-        <h1 className="text-5xl md:text-7xl font-serif text-[var(--color-gold)] tracking-[0.2em] text-center mb-2">MASQUERADE</h1>
-        <h2 className="text-xl md:text-2xl font-serif text-[var(--color-ivory)] tracking-[0.6em] text-center mb-8">NETWORK</h2>
+        <h1 className="text-5xl md:text-7xl font-serif text-[var(--color-gold)] tracking-[0.2em] text-center mb-2 drop-shadow-lg">MIDNIGHT</h1>
+        <h2 className="text-xl md:text-2xl font-serif text-[var(--color-ivory)] tracking-[0.6em] text-center mb-8 drop-shadow-md">MASQUERADE</h2>
         
         <div className="w-full max-w-[200px] h-[1px] bg-gradient-to-r from-transparent via-[var(--color-gold)] to-transparent mb-8"></div>
         
-        <p className="text-center text-[var(--color-ivory-antique)] text-lg mb-12">
+        <p className="text-center text-[var(--color-ivory-antique)] text-lg mb-12 drop-shadow-md">
           Two alliances. One masquerade. No one knows who stands beside them.
         </p>
 
@@ -136,6 +143,7 @@ export default function App() {
   const { gameState, connect } = useGameStore();
   const [joined, setJoined] = useState(false);
   const [showHand, setShowHand] = useState(false);
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
 
   if (!joined) {
     return (
@@ -169,16 +177,39 @@ export default function App() {
     <div className="min-h-screen bg-[var(--color-midnight)] text-[var(--color-ivory)] font-sans flex overflow-hidden">
       {isHost && gameState.phase !== "Lobby" && gameState.phase !== "GameOver" && (
         <button
-          onClick={() => {
-            if (confirm("Are you sure you want to end the game?")) {
-              useGameStore.getState().endGame();
-            }
-          }}
+          onClick={() => setShowEndConfirm(true)}
           className="fixed top-4 left-4 z-50 bg-[var(--color-charcoal-rich)] border border-[var(--color-crimson)]/50 text-[var(--color-ash)] hover:text-[var(--color-crimson)] px-3 py-1.5 rounded text-xs font-serif uppercase tracking-widest transition-colors shadow-lg"
         >
           End Game
         </button>
       )}
+
+      {showEndConfirm && (
+        <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4">
+          <div className="bg-[var(--color-velvet)] border border-[var(--color-crimson)] p-8 rounded-lg max-w-md w-full text-center shadow-[0_0_40px_rgba(156,28,43,0.3)]">
+            <h3 className="text-2xl font-serif text-[var(--color-ivory)] mb-4">End the Game?</h3>
+            <p className="text-[var(--color-ash)] mb-8">Are you sure you want to end the current game and return to the lobby?</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setShowEndConfirm(false)}
+                className="px-6 py-2 rounded border border-[var(--color-charcoal-warm)] text-[var(--color-ash)] hover:bg-[var(--color-charcoal-rich)] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  useGameStore.getState().endGame();
+                  setShowEndConfirm(false);
+                }}
+                className="px-6 py-2 rounded bg-[var(--color-crimson)] text-[var(--color-ivory)] hover:bg-[var(--color-crimson-active)] transition-colors"
+              >
+                End Game
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex-1 flex flex-col relative">
         {renderPhase()}
       </div>

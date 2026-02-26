@@ -1,6 +1,8 @@
 import { useGameStore } from "../client/store.js";
 import { Check, Copy, Crown, UserPlus } from "lucide-react";
 
+const AVATARS = ["🎭", "🦊", "🦉", "🦇", "🐺", "🐍", "🦋", "🕷️", "🦚", "🦢"];
+
 export function Lobby() {
   const { gameState, updatePlayer, addBot, advancePhase, kickPlayer } = useGameStore();
   
@@ -54,8 +56,12 @@ export function Lobby() {
               >
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="w-12 h-12 rounded-full bg-[var(--color-charcoal-rich)] flex items-center justify-center text-2xl animate-float">
-                      🎭
+                    <div className="w-12 h-12 rounded-full bg-[var(--color-charcoal-rich)] flex items-center justify-center text-2xl animate-float overflow-hidden">
+                      {p.avatar?.startsWith('/') ? (
+                        <img src={p.avatar} alt="Mask" className="w-full h-full object-cover" />
+                      ) : (
+                        p.avatar || "🎭"
+                      )}
                     </div>
                     {p.isHost && (
                       <div className="absolute -top-1 -right-1 text-[var(--color-gold)]">
@@ -132,6 +138,41 @@ export function Lobby() {
             </div>
 
             <div className="mt-12 space-y-4">
+              {me && (
+                <div className="mb-6">
+                  <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)] mb-3">Choose Your Mask</p>
+                  <div className="flex flex-wrap gap-2">
+                    {AVATARS.map(avatar => {
+                      const isTaken = players.some(p => p.id !== me.id && p.avatar === avatar);
+                      const isImage = avatar.startsWith('/');
+                      
+                      return (
+                        <button
+                          key={avatar}
+                          onClick={() => {
+                            if (!me.ready && !isTaken) {
+                              updatePlayer(me.name, avatar, me.ready);
+                            }
+                          }}
+                          disabled={me.ready || isTaken}
+                          className={`w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all overflow-hidden ${
+                            me.avatar === avatar 
+                              ? "bg-[var(--color-charcoal-rich)] border-2 border-[var(--color-gold)] shadow-[0_0_10px_rgba(212,175,55,0.3)]" 
+                              : "bg-[var(--color-velvet)] border border-[var(--color-charcoal-warm)] hover:border-[var(--color-gold)]/50"
+                          } ${me.ready ? "opacity-50 cursor-not-allowed" : ""} ${isTaken ? "opacity-20 cursor-not-allowed grayscale" : ""}`}
+                        >
+                          {isImage ? (
+                            <img src={avatar} alt="Mask" className="w-full h-full object-cover" />
+                          ) : (
+                            avatar
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {me && (
                 <button
                   onClick={() => updatePlayer(me.name, me.avatar, !me.ready)}

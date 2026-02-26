@@ -21,6 +21,14 @@ const WORD_CARDS: Card[] = [
 
 const rooms: Record<string, GameState> = {};
 
+const AVATARS = ["🎭", "🦊", "🦉", "🦇", "🐺", "🐍", "🦋", "🕷️", "🦚", "🦢"];
+
+function getAvailableAvatar(game: GameState): string {
+  const usedAvatars = Object.values(game.players).map(p => p.avatar);
+  const available = AVATARS.filter(a => !usedAvatars.includes(a));
+  return available.length > 0 ? available[0] : "🎭";
+}
+
 export function setupGameSocket(io: Server) {
   io.on("connection", (socket: Socket) => {
     console.log("Client connected:", socket.id);
@@ -57,10 +65,16 @@ export function setupGameSocket(io: Server) {
       }
 
       if (!game.players[socket.id]) {
+        let assignedAvatar = avatar;
+        const usedAvatars = Object.values(game.players).map(p => p.avatar);
+        if (!assignedAvatar || usedAvatars.includes(assignedAvatar) || assignedAvatar === "mask1") {
+          assignedAvatar = getAvailableAvatar(game);
+        }
+
         game.players[socket.id] = {
           id: socket.id,
           name,
-          avatar,
+          avatar: assignedAvatar,
           hand: [],
           isEliminated: false,
           journal: [],
@@ -76,10 +90,15 @@ export function setupGameSocket(io: Server) {
       const game = rooms[roomId];
       if (game && game.hostId === socket.id && game.phase === "Lobby") {
         const botId = `bot_${uuidv4()}`;
+        const botNames = ["Lord Byron", "Countess Lovelace", "Duke of Wellington", "Lady Hamilton", "Marquis de Sade", "Casanova", "Marie Antoinette", "King Louis XVI"];
+        const usedNames = Object.values(game.players).map(p => p.name);
+        const availableNames = botNames.filter(n => !usedNames.includes(n));
+        const name = availableNames.length > 0 ? availableNames[0] : `Bot ${Object.keys(game.players).length}`;
+
         game.players[botId] = {
           id: botId,
-          name: `Bot ${Object.keys(game.players).length}`,
-          avatar: "mask2",
+          name,
+          avatar: getAvailableAvatar(game),
           hand: [],
           isEliminated: false,
           journal: [],
@@ -144,7 +163,21 @@ export function setupGameSocket(io: Server) {
     socket.on("endGame", ({ roomId }: { roomId: string }) => {
       const game = rooms[roomId];
       if (game && game.hostId === socket.id) {
-        game.phase = "GameOver";
+        game.phase = "Lobby";
+        game.round = 0;
+        game.winner = undefined;
+        game.eliminatedThisRound = null;
+        game.currentMotif = undefined;
+        game.dancePairs = {};
+        game.sharedCards = {};
+        game.votes = {};
+        for (const pid in game.players) {
+          game.players[pid].isEliminated = false;
+          game.players[pid].hand = [];
+          game.players[pid].journal = [];
+          game.players[pid].alliance = undefined;
+          game.players[pid].ready = false;
+        }
         broadcastState(io, roomId);
       }
     });
@@ -201,16 +234,19 @@ function broadcastState(io: Server, roomId: string) {
     }
 
     if (game.phase === "PrivateDance") {
-      const senderId = Object.keys(game.dancePairs).find(id => game.dancePairs[id] === playerId);
+      const partnerId = game.dancePairs[playerId] || Object.keys(game.dancePairs).find(id => game.dancePairs[id] === playerId);
       if (game.sharedCards[playerId]) {
         clientState.sharedCards[playerId] = game.sharedCards[playerId];
       }
-      if (senderId && game.sharedCards[senderId]) {
-        clientState.sharedCards[senderId] = game.sharedCards[senderId];
+      if (partnerId && game.sharedCards[partnerId]) {
+        clientState.sharedCards[partnerId] = game.sharedCards[partnerId];
       }
       
       const activePlayersInPairs = Object.keys(game.dancePairs);
-      clientState.allPairsShared = activePlayersInPairs.length === 0 || activePlayersInPairs.every(pid => game.sharedCards[pid]);
+      clientState.allPairsShared = activePlayersInPairs.length === 0 || activePlayersInPairs.every(pid => {
+        const p2 = game.dancePairs[pid];
+        return game.sharedCards[pid] && game.sharedCards[p2];
+      });
     }
 
     for (const pid in game.players) {
@@ -441,7 +477,7 @@ function resolveVote(io: Server, roomId: string) {
 
   if (numMinority === 0) {
     game.winner = "Majority";
-  } else if (numMinority >= numMajority) {
+  } else if (numMinority > numMajority) {
     game.winner = "Minority";
   }
   // Keep phase as EliminationVote so clients can see the result.

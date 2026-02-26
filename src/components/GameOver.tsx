@@ -70,7 +70,7 @@ export function GameOver() {
                   isMajorityWin ? "border-[var(--color-gold)]/20" : "border-[var(--color-charcoal-warm)]"
                 }`}>
                   <div className="w-10 h-10 rounded-full bg-[var(--color-charcoal-rich)] flex items-center justify-center text-lg">
-                    🎭
+                    {p.avatar || "🎭"}
                   </div>
                   <div className="flex-1">
                     <p className={`font-serif ${p.isEliminated ? "text-[var(--color-ash)] line-through" : "text-[var(--color-ivory)]"}`}>
@@ -100,7 +100,7 @@ export function GameOver() {
                   !isMajorityWin ? "border-[var(--color-ivory)]/20" : "border-[var(--color-charcoal-warm)]"
                 }`}>
                   <div className="w-10 h-10 rounded-full bg-[var(--color-charcoal-rich)] flex items-center justify-center text-lg">
-                    🎭
+                    {p.avatar || "🎭"}
                   </div>
                   <div className="flex-1">
                     <p className={`font-serif ${p.isEliminated ? "text-[var(--color-ash)] line-through" : "text-[var(--color-ivory)]"}`}>

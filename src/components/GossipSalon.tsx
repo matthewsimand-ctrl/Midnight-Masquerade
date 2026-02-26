@@ -47,10 +47,14 @@ export function GossipSalon() {
               className="flex flex-col items-center transition-transform hover:-translate-y-2"
               style={{ transform: `translateY(${yOffset}px)` }}
             >
-              <div className={`w-16 h-16 rounded-full bg-[var(--color-charcoal-rich)] border-2 flex items-center justify-center text-2xl mb-2 shadow-[0_0_15px_rgba(0,0,0,0.5)] ${
+              <div className={`w-16 h-16 rounded-full bg-[var(--color-charcoal-rich)] border-2 flex items-center justify-center text-2xl mb-2 shadow-[0_0_15px_rgba(0,0,0,0.5)] overflow-hidden ${
                 p.isEliminated ? "border-[var(--color-charcoal-warm)] opacity-50 grayscale" : "border-[var(--color-gold)]/30"
               }`}>
-                🎭
+                {p.avatar?.startsWith('/') ? (
+                  <img src={p.avatar} alt="Mask" className="w-full h-full object-cover" />
+                ) : (
+                  p.avatar || "🎭"
+                )}
               </div>
               <span className={`font-sans text-xs ${p.isEliminated ? "text-[var(--color-ash)] line-through" : "text-[var(--color-ivory)]"}`}>
                 {p.name}
@@ -90,8 +94,12 @@ export function GossipSalon() {
             
             return (
               <div key={msg.id} className={`flex gap-3 max-w-[80%] ${isMe ? "self-end flex-row-reverse" : "self-start"}`}>
-                <div className="w-8 h-8 rounded-full bg-[var(--color-charcoal-rich)] border border-[var(--color-gold)]/30 flex items-center justify-center text-sm flex-shrink-0">
-                  🎭
+                <div className="w-8 h-8 rounded-full bg-[var(--color-charcoal-rich)] border border-[var(--color-gold)]/30 flex items-center justify-center text-sm flex-shrink-0 overflow-hidden">
+                  {sender?.avatar?.startsWith('/') ? (
+                    <img src={sender.avatar} alt="Mask" className="w-full h-full object-cover" />
+                  ) : (
+                    sender?.avatar || "🎭"
+                  )}
                 </div>
                 <div className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
                   <div className="flex items-baseline gap-2 mb-1">
