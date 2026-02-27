@@ -96,7 +96,7 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
         <div className="flex items-center gap-2">
           <span
             className="font-serif uppercase tracking-widest text-[9px]"
-            style={{ color: "rgba(42,74,74,0.95)" }}
+            style={{ color: "rgba(42,160,160,0.9)" }}
           >
             The Serpents
           </span>
