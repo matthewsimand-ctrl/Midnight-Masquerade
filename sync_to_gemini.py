@@ -43,15 +43,24 @@ def sync_files():
             # 2. Upload with explicit MIME type
             print(f"Syncing: {file_path} as {mime_type}")
             try:
-                # Passing the path as a positional argument (no 'file_path=' or 'path=')
-                # and providing the config for metadata.
+                # In this SDK version, the path is a keyword argument 'path'
+                # but it must be the ONLY positional-style argument or 
+                # strictly followed by the config.
                 new_file = client.files.upload(
-                    file_path,  # Just the variable
+                    path=file_path, 
                     config={'display_name': display_name, 'mime_type': mime_type}
                 )
                 print(f"Successfully synced {display_name}!")
             except Exception as e:
-                print(f"Failed to upload {file_path}: {e}")
+                # If 'path' fails, the SDK might want 'file'
+                try:
+                    new_file = client.files.upload(
+                        file=file_path, 
+                        config={'display_name': display_name, 'mime_type': mime_type}
+                    )
+                    print(f"Successfully synced {display_name}!")
+                except Exception as e2:
+                    print(f"Failed to upload {file_path}: {e2}")
 
 if __name__ == "__main__":
     sync_files()
