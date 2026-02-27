@@ -532,7 +532,6 @@ function resolveVote(io: Server, roomId: string) {
       .filter((p) => !p.isEliminated && p.alliance === "Majority" && p.id !== eliminatedId)
       .map((p) => p.id);
 
-    game.eliminatedThisRound = eliminatedId;
     game.forcedEliminationChooserId = eliminatedId;
     game.forcedEliminationCandidates = activeMajorityIds;
 
