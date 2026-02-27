@@ -1,7 +1,4 @@
 import { useGameStore } from "../client/store.js";
-
-const isImageAvatar = (avatar?: string) =>
-  Boolean(avatar && (avatar.startsWith("/") || avatar.startsWith("http")));
 import { useEffect, useState, useRef } from "react";
 
 const TALK_DURATION = 3 * 60; // 3 minutes in seconds
@@ -145,7 +142,7 @@ export function GossipSalon() {
                     : undefined,
                 }}
               >
-                {isImageAvatar(p.avatar) ? (
+                {p.avatar?.startsWith("/") ? (
                   <img src={p.avatar} alt={p.name} className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-2xl">{p.avatar || "🎭"}</span>

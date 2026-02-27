@@ -35,11 +35,11 @@ export function RoleReveal() {
 
             <div className="flex justify-center gap-12 border-t border-[var(--color-charcoal-warm)] pt-8">
               <div>
-                <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Crimson Members</p>
+                <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Lion Members</p>
                 <p className="text-4xl font-serif text-[var(--color-gold)]">{gameState.remainingMajority}</p>
               </div>
               <div>
-                <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Obsidian Members</p>
+                <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Serpent Members</p>
                 <p className="text-4xl font-serif text-[var(--color-ivory)]">{gameState.remainingMinority}</p>
               </div>
             </div>

@@ -17,7 +17,15 @@ export const CUSTOM_MASK_IMAGES: string[] = [
   // "/masks/fox.png",
   // "/masks/raven.png",
   // Add your own paths here ↑
-  "/masks/greenlady.png",
+  "/masks/Beak.png",
+  "/masks/Bird.png",
+  "/masks/Black.png",
+  "/masks/Blue.png",
+  "/masks/Cat.png",
+  "/masks/Feather.png",
+  "/masks/Gold.png",
+  "/masks/Jester.png",
+  "/masks/Lion.png",
 ];
 
 const isImageAvatar = (avatar?: string) =>
