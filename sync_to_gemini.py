@@ -22,13 +22,16 @@ def sync_files():
         print("Error: API Key not found.")
         return
 
+    # Initialize the client
     client = genai.Client(api_key=GEMINI_API_KEY)
+    
+    # Identify which files to process
     files_to_upload = changed_files_raw.split()
 
     for file_path in files_to_upload:
         if os.path.exists(file_path) and not file_path.endswith(('.py', '.yml')):
             
-            # Create a unique name with a timestamp (e.g., RulesModal_2235.tsx)
+            # Create a unique display name with a timestamp
             timestamp = datetime.now().strftime("%H%M")
             base_name = os.path.basename(file_path)
             name_part, ext_part = os.path.splitext(base_name)
@@ -36,24 +39,27 @@ def sync_files():
             
             mime_type = get_mime_type(file_path)
 
-            # 1. Cleanup: Delete ANY files with the same original base name to save space
+            # 1. Cleanup old versions
             print(f"Cleaning up old versions of {name_part}...")
-            for f in client.files.list():
-                if f.display_name.startswith(name_part):
-                    client.files.delete(name=f.name)
+            try:
+                for f in client.files.list():
+                    if f.display_name.startswith(name_part):
+                        client.files.delete(name=f.name)
+            except Exception as e:
+                print(f"Cleanup note: {e}")
 
-            # 2. Upload
+            # 2. Upload using the correct 'file=' keyword
             print(f"Syncing: {file_path} as {unique_display_name}")
             try:
                 new_file = client.files.upload(
-                    path=file_path, 
+                    file=file_path,  # <--- This is the correct keyword for google-genai
                     config={'display_name': unique_display_name, 'mime_type': mime_type}
                 )
                 
-                # 3. Wait until the file is actually ready
+                # 3. Wait for the file to be ACTIVE
                 while new_file.state.name == "PROCESSING":
                     print("Waiting for Google to process file...")
-                    time.sleep(3)
+                    time.sleep(4)
                     new_file = client.files.get(name=new_file.name)
                 
                 print(f"✅ Successfully synced and ACTIVE: {unique_display_name}")
