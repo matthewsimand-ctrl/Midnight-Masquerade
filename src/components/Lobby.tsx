@@ -1,5 +1,5 @@
 import { useGameStore } from "../client/store.js";
-import { Check, Copy, Crown, UserPlus } from "lucide-react";
+import { Check, Copy, Crown, Info, LogOut, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { RulesModal } from "./RulesModal.js";
 
@@ -38,8 +38,17 @@ const EMOJI_AVATARS = ["🎭", "🦊", "🦉", "🦇", "🐺", "🐍", "🦋", "
 const AVATARS = [...CUSTOM_MASK_IMAGES, ...EMOJI_AVATARS];
 
 export function Lobby() {
-  const { gameState, updatePlayer, addBot, advancePhase, kickPlayer, setGameMode } =
-    useGameStore();
+  const {
+    gameState,
+    updatePlayer,
+    addBot,
+    advancePhase,
+    kickPlayer,
+    setGameMode,
+    setRevealMotifDuringDiscussion,
+    setRevealMotifDuringElimination,
+    leaveRoom,
+  } = useGameStore();
   const [showRules, setShowRules] = useState(false);
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
 
@@ -95,11 +104,18 @@ export function Lobby() {
 
       <div className="z-10 w-full max-w-[1000px] grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-12 flex items-center justify-center">
-          <div className="bg-[var(--color-ballroom)] border border-[var(--color-gold)]/30 rounded-full px-6 py-2 text-[var(--color-ivory)]">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-ash)] mr-3">
+          <div className="bg-[var(--color-ballroom)] border border-[var(--color-gold)]/30 rounded-full px-4 py-2 text-[var(--color-ivory)] flex items-center gap-3">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-ash)]">
               Room Code
             </span>
             <span className="font-mono tracking-[0.25em] text-sm">{gameState.roomId}</span>
+            <button
+              onClick={copyRoomCode}
+              className="w-7 h-7 rounded-full bg-[var(--color-velvet)] border border-[var(--color-charcoal-rich)] flex items-center justify-center text-[var(--color-gold)] hover:bg-[var(--color-charcoal-warm)] transition-colors"
+              title={copyStatus === "copied" ? "Room Code Copied" : "Copy Room Code"}
+            >
+              {copyStatus === "copied" ? <Check size={14} /> : <Copy size={14} />}
+            </button>
           </div>
         </div>
 
@@ -181,23 +197,6 @@ export function Lobby() {
             )}
           </div>
 
-          <div className="bg-[var(--color-ballroom)] border border-[var(--color-charcoal-warm)] rounded-lg p-4 flex items-center justify-between">
-            <div>
-              <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)] mb-1">
-                Room Invitation
-              </p>
-              <p className="font-mono text-lg text-[var(--color-ivory)] tracking-widest">
-                {gameState.roomId}
-              </p>
-            </div>
-            <button
-              onClick={copyRoomCode}
-              className="w-10 h-10 rounded-full bg-[var(--color-velvet)] border border-[var(--color-charcoal-rich)] flex items-center justify-center text-[var(--color-gold)] hover:bg-[var(--color-charcoal-warm)] transition-colors"
-              title={copyStatus === "copied" ? "Room Code Copied" : "Copy Room Code"}
-            >
-              {copyStatus === "copied" ? <Check size={16} /> : <Copy size={16} />}
-            </button>
-          </div>
           <p className="mt-2 text-xs text-[var(--color-ash)] min-h-5">
             {copyStatus === "copied" && "Room code copied to clipboard."}
             {copyStatus === "failed" && "Unable to copy room code. Please copy it manually."}
@@ -233,6 +232,26 @@ export function Lobby() {
                 description="Classic mode with fixed alliances and original win conditions."
                 onClick={() => isHost && setGameMode("LionsVsSnakes")}
                 disabled={!isHost}
+              />
+            </div>
+
+            <div className="mb-5 space-y-3">
+              <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)]">Motif Reveal Settings</p>
+
+              <SettingToggle
+                title="Reveal Motif during Discussion"
+                enabled={gameState.revealMotifDuringDiscussion}
+                disabled={!isHost}
+                helpText="If turned on, all players will see both Motifs before voting. If left off, motifs are not shown during discussion."
+                onToggle={() => isHost && setRevealMotifDuringDiscussion(!gameState.revealMotifDuringDiscussion)}
+              />
+
+              <SettingToggle
+                title="Reveal Motif during Elimination"
+                enabled={gameState.revealMotifDuringElimination}
+                disabled={!isHost}
+                helpText="If turned on, all players will see both Motifs after a player is eliminated. If left off, players never see motifs."
+                onToggle={() => isHost && setRevealMotifDuringElimination(!gameState.revealMotifDuringElimination)}
               />
             </div>
 
@@ -338,16 +357,26 @@ export function Lobby() {
               )}
 
               {me && (
-                <button
-                  onClick={() => updatePlayer(me.name, me.avatar, !me.ready)}
-                  className={`w-full py-4 rounded font-serif font-bold tracking-widest uppercase transition-all ${
-                    me.ready
-                      ? "bg-transparent border border-[var(--color-gold)]/50 text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10"
-                      : "bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-[1.02]"
-                  }`}
-                >
-                  {me.ready ? "Cancel Ready" : "Ready to Dance"}
-                </button>
+                <>
+                  <button
+                    onClick={() => updatePlayer(me.name, me.avatar, !me.ready)}
+                    className={`w-full py-4 rounded font-serif font-bold tracking-widest uppercase transition-all ${
+                      me.ready
+                        ? "bg-transparent border border-[var(--color-gold)]/50 text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10"
+                        : "bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-[1.02]"
+                    }`}
+                  >
+                    {me.ready ? "Cancel Ready" : "Ready to Dance"}
+                  </button>
+
+                  <button
+                    onClick={() => leaveRoom()}
+                    className="w-full py-3 rounded bg-transparent border border-[var(--color-crimson)]/50 text-[var(--color-crimson)] hover:bg-[var(--color-crimson)]/10 transition-colors flex items-center justify-center gap-2 font-serif uppercase tracking-widest text-xs"
+                  >
+                    <LogOut size={14} />
+                    Leave Lobby
+                  </button>
+                </>
               )}
 
               {isHost && (
@@ -393,6 +422,50 @@ export function Lobby() {
         onClose={() => setShowRules(false)}
         selectedMode={gameState.gameMode}
       />
+    </div>
+  );
+}
+
+function SettingToggle({
+  title,
+  helpText,
+  enabled,
+  disabled,
+  onToggle,
+}: {
+  title: string;
+  helpText: string;
+  enabled: boolean;
+  disabled?: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-velvet)] p-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1">
+          <p className="text-xs uppercase tracking-widest text-[var(--color-ivory)] mb-1">{title}</p>
+          <div className="flex items-start gap-1 text-[10px] text-[var(--color-ash)]">
+            <Info size={12} className="mt-[1px] flex-shrink-0" />
+            <span>{helpText}</span>
+          </div>
+        </div>
+        <button
+          onClick={onToggle}
+          disabled={disabled}
+          className={`w-12 h-7 rounded-full border transition-colors relative ${
+            enabled
+              ? "bg-[var(--color-gold)]/30 border-[var(--color-gold)]"
+              : "bg-[var(--color-ballroom)] border-[var(--color-charcoal-rich)]"
+          } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          aria-label={title}
+        >
+          <span
+            className={`absolute top-[3px] w-5 h-5 rounded-full bg-[var(--color-ivory)] transition-transform ${
+              enabled ? "translate-x-6" : "translate-x-1"
+            }`}
+          />
+        </button>
+      </div>
     </div>
   );
 }

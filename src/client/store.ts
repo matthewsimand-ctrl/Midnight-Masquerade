@@ -17,6 +17,9 @@ interface GameStore {
   setGameMode: (gameMode: "BattleRoyale" | "LionsVsSnakes") => void;
   chooseForcedElimination: (targetId: string) => void;
   submitAllianceGuess: (alliance: "Majority" | "Minority") => void;
+  setRevealMotifDuringDiscussion: (enabled: boolean) => void;
+  setRevealMotifDuringElimination: (enabled: boolean) => void;
+  leaveRoom: () => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -111,5 +114,26 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (socket && gameState) {
       socket.emit("submitAllianceGuess", { roomId: gameState.roomId, alliance });
     }
+  },
+
+  setRevealMotifDuringDiscussion: (enabled) => {
+    const { socket, gameState } = get();
+    if (socket && gameState) {
+      socket.emit("setRevealMotifDuringDiscussion", { roomId: gameState.roomId, enabled });
+    }
+  },
+  setRevealMotifDuringElimination: (enabled) => {
+    const { socket, gameState } = get();
+    if (socket && gameState) {
+      socket.emit("setRevealMotifDuringElimination", { roomId: gameState.roomId, enabled });
+    }
+  },
+  leaveRoom: () => {
+    const { socket, gameState } = get();
+    if (socket && gameState) {
+      socket.emit("leaveRoom", { roomId: gameState.roomId });
+      socket.disconnect();
+    }
+    set({ socket: null, gameState: null });
   },
 }));
