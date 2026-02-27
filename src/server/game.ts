@@ -23,16 +23,6 @@ const rooms: Record<string, GameState> = {};
 
 const AVATARS = ["🎭", "🦊", "🦉", "🦇", "🐺", "🐍", "🦋", "🕷️", "🦚", "🦢"];
 
-function isMajorityAlliance(alliance?: string) {
-  return alliance?.toLowerCase() === "majority";
-}
-
-export function getForcedMajorityCandidates(game: GameState, votedPlayerId: string) {
-  return Object.values(game.players)
-    .filter((p) => !p.isEliminated && isMajorityAlliance(p.alliance) && p.id !== votedPlayerId)
-    .map((p) => p.id);
-}
-
 function getBattleRoyaleSplit(playerCount: number) {
   if (playerCount % 2 === 0) {
     return {
@@ -563,18 +553,15 @@ function resolveVote(io: Server, roomId: string) {
     // In Battle Royale, a voted Lion chooses another Lion to eliminate.
     // The voted Lion should remain active unless there are no valid targets.
 
-    const activeMajorityIds = getForcedMajorityCandidates(game, eliminatedId);
+    const activeMajorityIds = Object.values(game.players)
+      .filter((p) => !p.isEliminated && p.alliance === "Majority" && p.id !== eliminatedId)
+      .map((p) => p.id);
 
     game.forcedEliminationChooserId = eliminatedId;
     game.forcedEliminationCandidates = activeMajorityIds;
 
     if (activeMajorityIds.length === 0) {
-      // A voted Majority player should not be directly eliminated in Battle Royale.
-      // In this edge case, keep the player alive and wait for the next vote.
-      game.forcedEliminationChooserId = null;
-      game.forcedEliminationCandidates = [];
-      game.votes = {};
-      broadcastState(io, roomId);
+      applyElimination(io, roomId, eliminatedId);
       return;
     }
 
