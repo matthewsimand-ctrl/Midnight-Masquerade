@@ -89,17 +89,17 @@ export function GameOver() {
         <h1 className={`text-5xl md:text-7xl font-serif uppercase tracking-[0.1em] mb-4 ${
           isMajorityWin || isBattleRoyale ? "text-[var(--color-gold)] drop-shadow-[0_0_20px_rgba(212,175,55,0.5)]" : "text-[var(--color-ivory)] drop-shadow-[0_0_20px_rgba(245,240,232,0.5)]"
         }`}>
-          {isBattleRoyale ? "BATTLE ROYALE COMPLETE" : isMajorityWin ? "CRIMSON PROTOCOL VICTORIOUS" : "THE OBSIDIAN DIRECTIVE PREVAILS"}
+          {isBattleRoyale ? "BATTLE ROYALE COMPLETE" : isMajorityWin ? "LIONS TRIUMPH" : "SERPENTS PREVAIL"}
         </h1>
         
         {!isBattleRoyale && !isMajorityWin && (
           <p className="text-xl font-serif italic text-[var(--color-ivory-antique)] mb-12">
-            Against all odds, the shadow alliance claimed victory
+            Against all odds, the serpents outmaneuvered the lions
           </p>
         )}
         {!isBattleRoyale && isMajorityWin && (
           <p className="text-xl font-serif italic text-[var(--color-gold-light)] mb-12">
-            The majority has purged the masquerade
+            The lions have purged the masquerade
           </p>
         )}
         {isBattleRoyale && (
@@ -128,7 +128,7 @@ export function GameOver() {
             <h3 className={`text-xl font-serif mb-6 border-b pb-4 uppercase tracking-widest ${
               isMajorityWin ? "text-[var(--color-gold)] border-[var(--color-gold)]/30" : "text-[var(--color-ash)] border-[var(--color-charcoal-warm)]"
             }`}>
-              Crimson Protocol
+              Lions
             </h3>
             <ul className="space-y-4 text-left">
               {Object.values(gameState.players)
@@ -144,7 +144,7 @@ export function GameOver() {
             <h3 className={`text-xl font-serif mb-6 border-b pb-4 uppercase tracking-widest ${
               !isMajorityWin ? "text-[var(--color-ivory)] border-[var(--color-ivory)]/30" : "text-[var(--color-ash)] border-[var(--color-charcoal-warm)]"
             }`}>
-              Obsidian Directive
+              Serpents
             </h3>
             <ul className="space-y-4 text-left">
               {Object.values(gameState.players)
