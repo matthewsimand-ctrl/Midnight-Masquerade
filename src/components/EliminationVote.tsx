@@ -456,18 +456,20 @@ export function EliminationVote() {
             
             const isSelected = selectedVote === p.id || myVote === p.id;
             const isOtherSelected = (selectedVote || myVote) && !isSelected;
-            
+            const canSelectTarget = !(isRevote && amITied);
+
             return (
               <button
                 key={p.id}
-                onClick={() => setSelectedVote(p.id)}
+                onClick={() => canSelectTarget && setSelectedVote(p.id)}
+                disabled={!canSelectTarget}
                 className={`p-6 rounded-lg border transition-all flex flex-col items-center ${
                   isSelected 
                     ? 'bg-[var(--color-velvet)] border-[var(--color-crimson)] shadow-[0_0_20px_rgba(156,28,43,0.4)] scale-105' 
                     : isOtherSelected
                       ? 'bg-[var(--color-ballroom)] border-[var(--color-charcoal-warm)] opacity-30 grayscale'
                       : 'bg-[var(--color-velvet)] border-[var(--color-charcoal-rich)] hover:border-[var(--color-crimson)]/50 hover:shadow-[0_0_15px_rgba(156,28,43,0.2)]'
-                }`}
+                } ${!canSelectTarget ? 'opacity-60 cursor-not-allowed' : ''}`}
               >
                 <div className={`w-20 h-20 rounded-full bg-[var(--color-charcoal-rich)] mb-4 flex items-center justify-center text-3xl transition-all ${
                   isSelected ? 'border-2 border-[var(--color-crimson)] shadow-[0_0_15px_rgba(156,28,43,0.4)]' : ''
@@ -495,7 +497,7 @@ export function EliminationVote() {
         </div>
 
         <div className="h-24 mt-12 flex items-center justify-center">
-          {selectedVote && !myVote && (
+          {selectedVote && !myVote && !(isRevote && amITied) && (
             <button
               onClick={() => vote(selectedVote)}
               className="px-8 py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform animate-in slide-in-from-bottom-4"
@@ -507,6 +509,12 @@ export function EliminationVote() {
           {myVote && !isHost && (
             <div className="flex items-center gap-2 text-[var(--color-ash)] font-serif italic">
               <span className="text-xl">⚖️</span> Accusation Filed
+            </div>
+          )}
+
+          {isRevote && amITied && (
+            <div className="text-[var(--color-ash)] font-serif italic">
+              Tied players cannot vote in the revote. Waiting on the rest...
             </div>
           )}
 
