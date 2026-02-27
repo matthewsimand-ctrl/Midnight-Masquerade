@@ -40,7 +40,7 @@ print("\n🔎 Testing API authentication...")
 
 try:
     test_response = client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.0-flash",
         contents="Respond with the word OK"
     )
     print("✅ Auth success:", test_response.text.strip())
