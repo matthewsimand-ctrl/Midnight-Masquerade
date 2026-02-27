@@ -37,14 +37,10 @@ const HOW_TO_PLAY_SECTIONS: Array<{ title: string; body: string[] }> = [
     ],
   },
   {
-    title: "📜 Table of Contents",
-    body: ["Game Phases", "Game Modes", "How to Win"],
-  },
-  {
     title: "⚙️ Game Phases",
     body: [
       "The game is played over a series of rounds, consisting of six distinct phases.",
-      "Phase 1: Role Assignment — Each player is assigned one of two roles, but these roles remain hidden even to the player themself: Lions are the majority and Serpents are the minority. Each player is then dealt 10 cards, a random combination of single words and images.",
+      "Phase 1: Role Assignment — Each player is assigned one of two roles, but these roles remain hidden even to the player themself: Lions are the majority and Serpents are the minority. Each player is then dealt 15 cards, a random combination of single words and images.",
       "Phase 2: Motifs — Each player receives a Motif, which is a secret phrase. Players on the same team receive the same motif, while the opposing team receives a different motif.",
       "Phase 3: The Dance — Players are randomly assigned to dance with another player to share cards. The player you share with will not be the same player whose card you receive. Your objective is to play a card that signals your allegiance based on your motif.",
       "Phase 4: The Gossip Salon — After everyone has shared and received a card, players discuss who appears to share the same alliance. Important Note: players can never repeat words from their motif and should focus on how closely their card matches their motif or who they believe shares their motif.",

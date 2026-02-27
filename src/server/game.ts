@@ -567,8 +567,8 @@ function startGame(io: Server, roomId: string) {
     const pid = shuffledIds[i];
     game.players[pid].alliance = i < majSize ? "Majority" : "Minority";
     
-    const images = [...IMAGE_CARDS].sort(() => Math.random() - 0.5).slice(0, 5);
-    const words = [...WORD_CARDS].sort(() => Math.random() - 0.5).slice(0, 5);
+    const images = [...IMAGE_CARDS].sort(() => Math.random() - 0.5).slice(0, 7);
+    const words = [...WORD_CARDS].sort(() => Math.random() - 0.5).slice(0, 8);
     game.players[pid].hand = [...images, ...words].map(c => ({...c, id: uuidv4()}));
   }
 
@@ -742,7 +742,7 @@ function resolveVote(io: Server, roomId: string) {
       return;
     }
 
-    game.eliminatedThisRound = null;
+    game.eliminatedThisRound = "NONE";
     game.tiebreakerStage = "None";
     game.tiebreakerTiedPlayerIds = [];
     game.allianceGuesses = {};

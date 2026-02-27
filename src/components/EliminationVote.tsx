@@ -28,10 +28,16 @@ const getAvatarLabel = (avatar?: string) => {
 const ALLIANCE_MOTIF_ORDER = ["Majority", "Minority"] as const;
 
 export function EliminationVote() {
-  const { gameState, vote, advancePhase, chooseForcedElimination } = useGameStore();
+  const { gameState, vote, advancePhase, chooseForcedElimination, submitAllianceGuess } = useGameStore();
   const [selectedVote, setSelectedVote] = useState<string | null>(null);
+  const [selectedGuess, setSelectedGuess] = useState<"Majority" | "Minority" | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
   
+  useEffect(() => {
+    setSelectedVote(null);
+    setSelectedGuess(null);
+  }, [gameState?.tiebreakerStage]);
+
   useEffect(() => {
     if (gameState?.eliminatedThisRound) {
       setIsRevealing(true);
@@ -46,8 +52,24 @@ export function EliminationVote() {
   const activePlayers = Object.values(gameState.players).filter(p => !p.isEliminated);
   const isHost = me?.isHost;
   
+  const tiedIds = gameState.tiebreakerTiedPlayerIds || [];
+  const isRevote = gameState.tiebreakerStage === "Revote";
+  const isAllianceGuess = gameState.tiebreakerStage === "AllianceGuess";
+
+  const amITied = (isRevote || isAllianceGuess) && me ? tiedIds.includes(me.id) : false;
+
+  let allVotesLocked = false;
+  if (isAllianceGuess) {
+    allVotesLocked = activePlayers.every(p => Boolean(gameState.allianceGuesses?.[p.id]));
+  } else if (isRevote) {
+    const votingPlayers = activePlayers.filter(p => !tiedIds.includes(p.id));
+    allVotesLocked = votingPlayers.every(p => Boolean(gameState.votes[p.id]));
+  } else {
+    allVotesLocked = activePlayers.every((player) => Boolean(gameState.votes[player.id]));
+  }
+
   const myVote = me ? gameState.votes[me.id] : null;
-  const allVotesLocked = activePlayers.every((player) => Boolean(gameState.votes[player.id]));
+  const myGuess = me ? gameState.allianceGuesses?.[me.id] : null;
   const isForcedChooser = me && gameState.forcedEliminationChooserId === me.id;
 
   if (isForcedChooser && gameState.forcedEliminationCandidates && gameState.forcedEliminationCandidates.length > 0) {
@@ -109,6 +131,65 @@ export function EliminationVote() {
   }
 
   if (gameState.eliminatedThisRound) {
+    if (gameState.eliminatedThisRound === "NONE") {
+      return (
+        <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
+          <div className="velvet-texture"></div>
+          
+          <div className="text-center max-w-2xl w-full z-10 animate-in fade-in duration-1000">
+            <h2 className="text-4xl text-[var(--color-gold)] font-serif mb-8 uppercase tracking-widest">No One Eliminated</h2>
+            
+            <div className="bg-[var(--color-velvet)] border border-[var(--color-gold)]/50 p-12 rounded-lg shadow-[0_0_40px_rgba(212,175,55,0.2)] relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-gold)]/5 to-transparent"></div>
+              
+              <div className="relative z-10">
+                <p className="text-[var(--color-ivory-antique)] text-xl mb-8 font-serif italic">Everyone guessed correctly. The ball continues with all remaining guests.</p>
+                
+                {gameState.revealedAllianceMotifs && (
+                  <div className="mb-8 rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-ballroom)]/80 p-5 text-left">
+                    <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-4 text-center">Round Motifs Revealed</p>
+                    <div className="space-y-3">
+                      {ALLIANCE_MOTIF_ORDER.map((alliance) => {
+                        const motif = gameState.revealedAllianceMotifs?.[alliance];
+                        if (!motif) return null;
+                        const allianceDisplay = getAllianceDisplay(alliance);
+                        return (
+                          <div key={alliance}>
+                            <p className={`text-xs uppercase tracking-widest ${allianceDisplay.colorClass}`}>{allianceDisplay.label}</p>
+                            <p className="text-[var(--color-ivory-antique)] font-serif">{motif}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex justify-center gap-12 border-t border-[var(--color-charcoal-warm)] pt-8">
+                  <div>
+                    <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Lions Remaining</p>
+                    <p className="text-4xl font-serif text-[var(--color-gold)]">{gameState.remainingMajority}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Serpents Remaining</p>
+                    <p className="text-4xl font-serif text-[rgba(42,160,160,0.9)]">{gameState.remainingMinority}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {isHost && (
+              <button
+                onClick={() => advancePhase()}
+                className="mt-12 px-8 py-4 rounded bg-transparent border border-[var(--color-gold)]/50 text-[var(--color-gold)] font-serif uppercase tracking-widest hover:bg-[var(--color-gold)]/10 transition-colors"
+              >
+                Continue to Next Round
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     const eliminatedPlayer = gameState.players[gameState.eliminatedThisRound];
     const eliminatedAlliance = getAllianceDisplay(eliminatedPlayer?.alliance);
     
@@ -249,6 +330,98 @@ export function EliminationVote() {
     );
   }
 
+  if (isAllianceGuess && !me?.isEliminated) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-crimson)]/10 to-transparent pointer-events-none" style={{ boxShadow: 'inset 0 0 100px rgba(156,28,43,0.2)' }}></div>
+        <div className="velvet-texture"></div>
+        
+        <div className="text-center max-w-4xl w-full z-10">
+          <h2 className="text-3xl text-[var(--color-ivory)] font-serif mb-2 uppercase tracking-widest animate-in slide-in-from-top-8">Final Tiebreaker</h2>
+          <p className="text-[var(--color-ash)] mb-8 italic font-serif">The vote is still tied. Everyone must guess their own alliance. Incorrect guesses will be eliminated.</p>
+          
+          <div className="flex justify-center gap-8 mb-12">
+            <button
+              onClick={() => setSelectedGuess("Majority")}
+              className={`p-8 rounded-lg border transition-all flex flex-col items-center w-64 ${
+                (selectedGuess === "Majority" || myGuess === "Majority")
+                  ? 'bg-[var(--color-velvet)] border-[var(--color-gold)] shadow-[0_0_20px_rgba(212,175,55,0.4)] scale-105' 
+                  : (selectedGuess || myGuess)
+                    ? 'bg-[var(--color-ballroom)] border-[var(--color-charcoal-warm)] opacity-30 grayscale'
+                    : 'bg-[var(--color-velvet)] border-[var(--color-charcoal-rich)] hover:border-[var(--color-gold)]/50 hover:shadow-[0_0_15px_rgba(212,175,55,0.2)]'
+              }`}
+            >
+              <span className="text-4xl mb-4">🦁</span>
+              <h3 className="text-2xl font-serif text-[var(--color-gold)]">The Lions</h3>
+            </button>
+            <button
+              onClick={() => setSelectedGuess("Minority")}
+              className={`p-8 rounded-lg border transition-all flex flex-col items-center w-64 ${
+                (selectedGuess === "Minority" || myGuess === "Minority")
+                  ? 'bg-[var(--color-velvet)] border-[rgba(42,160,160,0.9)] shadow-[0_0_20px_rgba(42,160,160,0.4)] scale-105' 
+                  : (selectedGuess || myGuess)
+                    ? 'bg-[var(--color-ballroom)] border-[var(--color-charcoal-warm)] opacity-30 grayscale'
+                    : 'bg-[var(--color-velvet)] border-[var(--color-charcoal-rich)] hover:border-[rgba(42,160,160,0.9)]/50 hover:shadow-[0_0_15px_rgba(42,160,160,0.2)]'
+              }`}
+            >
+              <span className="text-4xl mb-4">🐍</span>
+              <h3 className="text-2xl font-serif text-[rgba(42,160,160,0.9)]">The Serpents</h3>
+            </button>
+          </div>
+
+          <div className="h-24 mt-12 flex items-center justify-center">
+            {selectedGuess && !myGuess && (
+              <button
+                onClick={() => submitAllianceGuess(selectedGuess)}
+                className="px-8 py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform animate-in slide-in-from-bottom-4"
+              >
+                Lock In Guess
+              </button>
+            )}
+            
+            {myGuess && !isHost && (
+              <div className="flex items-center gap-2 text-[var(--color-ash)] font-serif italic">
+                <span className="text-xl">⚖️</span> Guess Locked
+              </div>
+            )}
+
+            {isHost && !allVotesLocked && (
+              <div className="text-[var(--color-ash)] font-serif italic">
+                Waiting for everyone to lock in...
+              </div>
+            )}
+            {isHost && allVotesLocked && (
+              <button
+                onClick={() => advancePhase()}
+                className="px-8 py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform"
+              >
+                Resolve Guesses
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isRevote && amITied && !me?.isEliminated) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
+        <div className="velvet-texture"></div>
+        <h2 className="text-3xl text-[var(--color-crimson)] font-serif mb-4 uppercase tracking-widest z-10 animate-pulse">You are on the block</h2>
+        <p className="text-[var(--color-ivory-antique)] z-10 text-lg">The vote tied. The others are deciding your fate.</p>
+        {isHost && allVotesLocked && (
+          <button
+            onClick={() => advancePhase()}
+            className="mt-12 px-8 py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform z-10"
+          >
+            Resolve Vote
+          </button>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-crimson)]/10 to-transparent pointer-events-none" style={{ boxShadow: 'inset 0 0 100px rgba(156,28,43,0.2)' }}></div>
@@ -279,6 +452,8 @@ export function EliminationVote() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 justify-center max-w-3xl mx-auto">
           {activePlayers.map(p => {
+            if (isRevote && !tiedIds.includes(p.id)) return null;
+            
             const isSelected = selectedVote === p.id || myVote === p.id;
             const isOtherSelected = (selectedVote || myVote) && !isSelected;
             

@@ -127,6 +127,28 @@ export function GossipSalon() {
           </p>
         </div>
 
+        {/* Revealed Motifs (if enabled) */}
+        {gameState.revealedAllianceMotifs && (
+          <div className="rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-ballroom)]/80 p-5 text-left max-w-2xl mx-auto w-full">
+            <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-4 text-center">Round Motifs Revealed</p>
+            <div className="space-y-3">
+              {["Majority", "Minority"].map((alliance) => {
+                const motif = gameState.revealedAllianceMotifs?.[alliance];
+                if (!motif) return null;
+                const allianceDisplay = alliance === "Majority" 
+                  ? { label: "The Lions", colorClass: "text-[var(--color-gold)]" }
+                  : { label: "The Serpents", colorClass: "text-[rgba(42,74,74,0.95)]" };
+                return (
+                  <div key={alliance}>
+                    <p className={`text-xs uppercase tracking-widest ${allianceDisplay.colorClass}`}>{allianceDisplay.label}</p>
+                    <p className="text-[var(--color-ivory-antique)] font-serif">{motif}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Player ring */}
         <div className="flex flex-wrap justify-center gap-6 max-w-2xl px-8">
           {players.map((p) => (
