@@ -157,6 +157,12 @@ export function EliminationVote() {
                 </p>
               </div>
               
+              {gameState.gameMode === "BattleRoyale" && (
+                <p className="text-sm text-[var(--color-ash)] font-serif mb-6">
+                  These counts show how many players will be on each allegiance in the next round.
+                </p>
+              )}
+
               <div className="flex justify-center gap-12 border-t border-[var(--color-charcoal-warm)] pt-8">
                 <div>
                   <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Lions Remaining</p>
