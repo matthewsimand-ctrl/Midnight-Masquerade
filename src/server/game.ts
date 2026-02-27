@@ -144,6 +144,8 @@ export function setupGameSocket(io: Server) {
           tiebreakerStage: "None",
           tiebreakerTiedPlayerIds: [],
           allianceGuesses: {},
+          revealMotifDuringDiscussion: false,
+          revealMotifDuringElimination: false,
         };
       }
 
@@ -221,6 +223,44 @@ export function setupGameSocket(io: Server) {
         game.gameMode = gameMode;
         broadcastState(io, roomId);
       }
+    });
+
+
+    socket.on("setRevealMotifDuringDiscussion", ({ roomId, enabled }: { roomId: string, enabled: boolean }) => {
+      const game = rooms[roomId];
+      if (game && game.hostId === socket.id && game.phase === "Lobby") {
+        game.revealMotifDuringDiscussion = enabled;
+        broadcastState(io, roomId);
+      }
+    });
+
+    socket.on("setRevealMotifDuringElimination", ({ roomId, enabled }: { roomId: string, enabled: boolean }) => {
+      const game = rooms[roomId];
+      if (game && game.hostId === socket.id && game.phase === "Lobby") {
+        game.revealMotifDuringElimination = enabled;
+        broadcastState(io, roomId);
+      }
+    });
+
+    socket.on("leaveRoom", ({ roomId }: { roomId: string }) => {
+      const game = rooms[roomId];
+      if (!game || !game.players[socket.id]) return;
+
+      if (game.phase !== "Lobby") return;
+
+      delete game.players[socket.id];
+      socket.leave(roomId);
+
+      if (Object.keys(game.players).length === 0) {
+        delete rooms[roomId];
+        return;
+      }
+
+      if (game.hostId === socket.id) {
+        game.hostId = Object.keys(game.players)[0];
+      }
+
+      broadcastState(io, roomId);
     });
 
     socket.on("shareCard", ({ roomId, cardId }: { roomId: string, cardId: string }) => {
@@ -378,14 +418,21 @@ function broadcastState(io: Server, roomId: string) {
       forcedEliminationChooserId: game.forcedEliminationChooserId,
       forcedEliminationCandidates: game.forcedEliminationCandidates,
       coWinners: game.coWinners,
-      revealedAllianceMotifs: (game.phase === "EliminationVote" || game.phase === "GameOver" || game.eliminatedThisRound) ? game.allianceMotifs : undefined,
+      revealMotifDuringDiscussion: game.revealMotifDuringDiscussion,
+      revealMotifDuringElimination: game.revealMotifDuringElimination,
+      revealedAllianceMotifs: (
+        (game.phase === "GossipSalon" && game.revealMotifDuringDiscussion) ||
+        ((game.phase === "GameOver" || game.eliminatedThisRound) && game.revealMotifDuringElimination)
+      )
+        ? game.allianceMotifs
+        : undefined,
       tiebreakerStage: game.tiebreakerStage || "None",
       tiebreakerTiedPlayerIds: game.tiebreakerTiedPlayerIds || [],
       allianceGuesses: game.allianceGuesses || {},
       players: {},
     };
 
-    if (game.phase !== "Lobby" && game.phase !== "Dealing" && game.phase !== "GameOver" && player.alliance) {
+    if (game.phase !== "Lobby" && game.phase !== "Dealing" && game.phase !== "GossipSalon" && game.phase !== "GameOver" && player.alliance) {
       clientState.currentMotif = game.allianceMotifs[player.alliance];
     }
 

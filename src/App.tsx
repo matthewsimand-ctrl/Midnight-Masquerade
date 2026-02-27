@@ -185,12 +185,18 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
 }
 
 export default function App() {
-  const { gameState, connect } = useGameStore();
+  const { gameState, connect, socket } = useGameStore();
   const [joined, setJoined] = useState(false);
   const [showHand, setShowHand] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   // Journal state lifted up so GameHeader can control it
   const [journalOpen, setJournalOpen] = useState(false);
+
+  useEffect(() => {
+    if (joined && !gameState && !socket) {
+      setJoined(false);
+    }
+  }, [joined, gameState, socket]);
 
   if (!joined) {
     return (
