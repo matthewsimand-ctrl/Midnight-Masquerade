@@ -66,5 +66,9 @@ def sync_files():
             except Exception as e:
                 print(f"❌ Failed to upload {file_path}: {e}")
 
+# ... (your existing code to upload the file)
+file = genai.upload_file(path=file_path)
+print(f"✅ Active URI: {file.uri}") # Add this line
+
 if __name__ == "__main__":
     sync_files()
