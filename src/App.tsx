@@ -259,7 +259,7 @@ export default function App() {
       {isHost && gameState.phase !== "Lobby" && gameState.phase !== "GameOver" && (
         <button
           onClick={() => setShowEndConfirm(true)}
-          className="fixed top-16 left-4 z-50 bg-[var(--color-charcoal-rich)] border border-[var(--color-crimson)]/50 text-[var(--color-ash)] hover:text-[var(--color-crimson)] px-3 py-1.5 rounded text-xs font-serif uppercase tracking-widest transition-colors shadow-lg"
+          className="fixed top-20 left-4 z-50 bg-[var(--color-charcoal-rich)] border border-[var(--color-crimson)]/50 text-[var(--color-ash)] hover:text-[var(--color-crimson)] px-3 py-1.5 rounded text-xs font-serif uppercase tracking-widest transition-colors shadow-lg"
         >
           End Game
         </button>
