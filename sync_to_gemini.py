@@ -64,3 +64,9 @@ def sync_files():
 
 if __name__ == "__main__":
     sync_files()
+
+# Add this at the end of your sync_files() function:
+for f in client.files.list():
+    if f.display_name == "RulesModal.tsx":
+        print(f"Verified! File {f.display_name} exists with URI: {f.uri}")
+        # This URI changes every time you upload a new version
