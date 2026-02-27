@@ -2,14 +2,14 @@ import { useGameStore } from "../client/store.js";
 import { useState, useEffect } from "react";
 
 const ALLIANCE_DISPLAY: Record<string, { label: string; colorClass: string }> = {
-  majority: { label: "The Lions", colorClass: "text-[var(--color-crimson)]" },
-  lion: { label: "The Lions", colorClass: "text-[var(--color-crimson)]" },
-  lions: { label: "The Lions", colorClass: "text-[var(--color-crimson)]" },
-  minority: { label: "The Serpents", colorClass: "text-[rgb(42,160,160)]" },
-  serpent: { label: "The Serpents", colorClass: "text-[rgb(42,160,160)]" },
-  serpents: { label: "The Serpents", colorClass: "text-[rgb(42,160,160)]" },
-  snake: { label: "The Serpents", colorClass: "text-[rgb(42,160,160)]" },
-  snakes: { label: "The Serpents", colorClass: "text-[rgb(42,160,160)]" },
+  majority: { label: "The Lions", colorClass: "text-[var(--color-gold)]" },
+  lion: { label: "The Lions", colorClass: "text-[var(--color-gold)]" },
+  lions: { label: "The Lions", colorClass: "text-[var(--color-gold)]" },
+  minority: { label: "The Serpents", colorClass: "text-[var(--color-ivory)]" },
+  serpent: { label: "The Serpents", colorClass: "text-[var(--color-ivory)]" },
+  serpents: { label: "The Serpents", colorClass: "text-[var(--color-ivory)]" },
+  snake: { label: "The Serpents", colorClass: "text-[var(--color-ivory)]" },
+  snakes: { label: "The Serpents", colorClass: "text-[var(--color-ivory)]" },
 };
 
 const getAllianceDisplay = (alliance?: string) => {
@@ -66,7 +66,7 @@ export function EliminationVote() {
               {eliminatedPlayer?.name}
             </h1>
             
-            <p className={`text-2xl font-serif animate-in slide-in-from-bottom-4 fade-in duration-1000 delay-[1500ms] fill-mode-both ${eliminatedAlliance.colorClass}`}>
+            <p className="text-2xl font-serif text-[var(--color-crimson)] animate-in slide-in-from-bottom-4 fade-in duration-1000 delay-[1500ms] fill-mode-both">
               "{eliminatedAlliance.label}"
             </p>
             
