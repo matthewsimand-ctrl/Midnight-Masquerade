@@ -541,15 +541,13 @@ function resolveVote(io: Server, roomId: string) {
       return;
     }
 
-    // In Battle Royale, a voted Lion is still eliminated, but gets a final
-    // retaliation choice before the next round begins.
-    votedPlayer.isEliminated = true;
+    // In Battle Royale, a voted Lion chooses another Lion to eliminate.
+    // The voted Lion should remain active unless there are no valid targets.
 
     const activeMajorityIds = Object.values(game.players)
       .filter((p) => !p.isEliminated && p.alliance === "Majority" && p.id !== eliminatedId)
       .map((p) => p.id);
 
-    game.eliminatedThisRound = eliminatedId;
     game.forcedEliminationChooserId = eliminatedId;
     game.forcedEliminationCandidates = activeMajorityIds;
 
