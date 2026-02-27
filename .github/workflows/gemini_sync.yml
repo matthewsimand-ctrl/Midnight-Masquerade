@@ -1,0 +1,34 @@
+name: Sync Updated Files to Gemini
+on:
+  push:
+    branches:
+      - main  # Or your default branch name
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Necessary to compare the last two commits
+
+      - name: Get list of changed files
+        id: files
+        run: |
+          # This command gets the names of files changed in the last commit
+          echo "changed_files=$(git diff --name-only HEAD^ HEAD | tr '\n' ' ')" >> $GITHUB_OUTPUT
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: pip install google-generativeai
+
+      - name: Run Sync Script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CHANGED_FILES: ${{ steps.files.outputs.changed_files }}
+        run: python sync_to_gemini.py

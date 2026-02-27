@@ -532,15 +532,11 @@ function resolveVote(io: Server, roomId: string) {
       .filter((p) => !p.isEliminated && p.alliance === "Majority" && p.id !== eliminatedId)
       .map((p) => p.id);
 
+    game.eliminatedThisRound = eliminatedId;
     game.forcedEliminationChooserId = eliminatedId;
     game.forcedEliminationCandidates = activeMajorityIds;
 
-    if (activeMajorityIds.length === 0) {
-      applyElimination(io, roomId, eliminatedId);
-      return;
-    }
-
-    if (game.players[eliminatedId].isBot) {
+    if (game.players[eliminatedId].isBot && activeMajorityIds.length > 0) {
       const selectedTarget = activeMajorityIds[Math.floor(Math.random() * activeMajorityIds.length)];
       applyElimination(io, roomId, selectedTarget);
       return;
