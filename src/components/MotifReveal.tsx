@@ -1,5 +1,8 @@
 import { useGameStore } from "../client/store.js";
 
+const isImageAvatar = (avatar?: string) =>
+  Boolean(avatar && (avatar.startsWith("/") || avatar.startsWith("http")));
+
 export function MotifReveal() {
   const { gameState, advancePhase } = useGameStore();
   if (!gameState) return null;
@@ -18,9 +21,13 @@ export function MotifReveal() {
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--color-gold)]/10 to-transparent animate-shimmer w-[200%]"></div>
           
           <div className="flex items-center gap-8 w-full relative z-10">
-            {/* Wax Seal */}
-            <div className="w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center shadow-inner border border-black/50 bg-[var(--color-burgundy)]">
-              <span className="text-[var(--color-ivory)] font-serif text-2xl">M</span>
+            {/* Player Avatar */}
+            <div className="w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center shadow-inner border border-black/50 bg-[var(--color-burgundy)] overflow-hidden text-2xl">
+              {isImageAvatar(me?.avatar) ? (
+                <img src={me?.avatar} alt={me?.name || "Mask"} className="w-full h-full object-cover" />
+              ) : (
+                me?.avatar || "🎭"
+              )}
             </div>
             
             <div className="flex-1 text-left">
@@ -49,5 +56,4 @@ export function MotifReveal() {
     </div>
   );
 }
-
 

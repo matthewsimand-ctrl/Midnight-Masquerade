@@ -1,6 +1,14 @@
 import { useGameStore } from "../client/store.js";
 import { useState, useEffect } from "react";
 
+const isImageAvatar = (avatar?: string) =>
+  Boolean(avatar && (avatar.startsWith("/") || avatar.startsWith("http")));
+
+const getAvatarLabel = (avatar?: string) => {
+  if (!avatar || !isImageAvatar(avatar)) return null;
+  return avatar.split("/").pop()?.replace(/\.\w+$/, "") || "custom mask";
+};
+
 export function EliminationVote() {
   const { gameState, vote, advancePhase } = useGameStore();
   const [selectedVote, setSelectedVote] = useState<string | null>(null);
@@ -65,7 +73,15 @@ export function EliminationVote() {
             
             <div className="relative z-10">
               <div className="w-32 h-32 mx-auto rounded-full bg-[var(--color-charcoal-rich)] mb-6 flex items-center justify-center text-6xl opacity-50 grayscale">
-                {eliminatedPlayer?.avatar || "🎭"}
+                {isImageAvatar(eliminatedPlayer?.avatar) ? (
+                  <img
+                    src={eliminatedPlayer?.avatar}
+                    alt={eliminatedPlayer?.name || "Mask"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  eliminatedPlayer?.avatar || "🎭"
+                )}
               </div>
               <h3 className="text-3xl font-serif text-[var(--color-ivory)] mb-2">{eliminatedPlayer?.name}</h3>
               <p className="text-[var(--color-ash)] text-lg mb-8 font-serif italic">has been eliminated from the ball.</p>
@@ -152,11 +168,20 @@ export function EliminationVote() {
                 <div className={`w-20 h-20 rounded-full bg-[var(--color-charcoal-rich)] mb-4 flex items-center justify-center text-3xl transition-all ${
                   isSelected ? 'border-2 border-[var(--color-crimson)] shadow-[0_0_15px_rgba(156,28,43,0.4)]' : ''
                 }`}>
-                  {p.avatar || "🎭"}
+                  {isImageAvatar(p.avatar) ? (
+                    <img src={p.avatar} alt={p.name} className="w-full h-full object-cover rounded-full" />
+                  ) : (
+                    p.avatar || "🎭"
+                  )}
                 </div>
                 <h3 className={`text-lg font-serif mb-1 ${isSelected ? 'text-[var(--color-crimson)]' : 'text-[var(--color-ivory)]'}`}>
                   {p.name}
                 </h3>
+                {getAvatarLabel(p.avatar) && (
+                  <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)] mb-1">
+                    {getAvatarLabel(p.avatar)}
+                  </p>
+                )}
                 {isSelected && (
                   <span className="text-[10px] uppercase tracking-widest text-[var(--color-crimson)] font-bold animate-pulse">Accused</span>
                 )}
@@ -194,6 +219,5 @@ export function EliminationVote() {
     </div>
   );
 }
-
 
 
