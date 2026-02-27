@@ -26,6 +26,7 @@ export const CUSTOM_MASK_IMAGES: string[] = [
   "/masks/Gold.png",
   "/masks/Jester.png",
   "/masks/Lion.png",
+  "/masks/Plum.png",
 ];
 
 const isImageAvatar = (avatar?: string) =>
