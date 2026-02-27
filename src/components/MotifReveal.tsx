@@ -19,15 +19,13 @@ export function MotifReveal() {
           
           <div className="flex items-center gap-8 w-full relative z-10">
             {/* Wax Seal */}
-            <div className={`w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center shadow-inner border border-black/50 ${
-              me?.alliance === "Majority" ? "bg-[var(--color-crimson)]" : "bg-[var(--color-burgundy)]"
-            }`}>
+            <div className="w-16 h-16 rounded-full flex-shrink-0 flex items-center justify-center shadow-inner border border-black/50 bg-[var(--color-burgundy)]">
               <span className="text-[var(--color-ivory)] font-serif text-2xl">M</span>
             </div>
             
             <div className="flex-1 text-left">
               <p className="text-[var(--color-ash)] text-xs uppercase tracking-widest mb-1">
-                {me?.alliance === "Majority" ? "Crimson Protocol Motif" : "Obsidian Directive Motif"}
+                Your Motif
               </p>
               <h1 className="text-2xl md:text-3xl font-serif text-[var(--color-gold)] font-bold mb-1">
                 "{gameState.currentMotif}"
@@ -51,6 +49,5 @@ export function MotifReveal() {
     </div>
   );
 }
-
 
 

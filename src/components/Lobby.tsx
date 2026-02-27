@@ -15,8 +15,11 @@ export const CUSTOM_MASK_IMAGES: string[] = [
   // "/masks/fox.png",
   // "/masks/raven.png",
   // Add your own paths here ↑
-  "masks/greenlady.png",
+  "/masks/greenlady.png",
 ];
+
+const isImageAvatar = (avatar?: string) =>
+  Boolean(avatar && (avatar.startsWith("/") || avatar.startsWith("http")));
 
 const EMOJI_AVATARS = ["🎭", "🦊", "🦉", "🦇", "🐺", "🐍", "🦋", "🕷️", "🦚", "🦢"];
 
@@ -79,7 +82,7 @@ export function Lobby() {
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <div className="w-12 h-12 rounded-full bg-[var(--color-charcoal-rich)] flex items-center justify-center text-2xl animate-float overflow-hidden">
-                      {p.avatar?.startsWith("/") ? (
+                      {isImageAvatar(p.avatar) ? (
                         <img
                           src={p.avatar}
                           alt="Mask"

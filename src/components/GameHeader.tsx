@@ -10,24 +10,6 @@ const PHASE_LABELS: Record<string, string> = {
   Dealing: "Dealing Cards",
 };
 
-function FactionDots({ count, active, color }: { count: number; active: number; color: string }) {
-  return (
-    <div className="flex gap-1 items-center">
-      {Array.from({ length: count }).map((_, i) => (
-        <span
-          key={i}
-          className="w-2.5 h-2.5 rounded-full inline-block"
-          style={{
-            backgroundColor: i < active ? color : "transparent",
-            border: `1.5px solid ${color}`,
-            opacity: i < active ? 1 : 0.4,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 interface GameHeaderProps {
   onOpenJournal: () => void;
   journalOpen: boolean;
@@ -41,12 +23,6 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
   const me = Object.values(gameState.players).find((p) => p.isMe);
   const phaseLabel = PHASE_LABELS[gameState.phase] ?? gameState.phase;
 
-  const totalMajority = Object.values(gameState.players).filter(
-    (p) => p.alliance === "Majority"
-  ).length;
-  const totalMinority = Object.values(gameState.players).filter(
-    (p) => p.alliance === "Minority"
-  ).length;
   const activeMajority = gameState.remainingMajority;
   const activeMinority = gameState.remainingMinority;
 
@@ -96,24 +72,18 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
           </span>
         </div>
 
-        {/* Faction 1 — Crimson (Majority) */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <span
-            className="font-serif uppercase tracking-widest text-[9px] max-w-[90px] truncate"
+            className="font-serif uppercase tracking-widest text-[9px]"
             style={{ color: "rgba(156,28,43,0.9)" }}
           >
-            The Scarlet Ord...
+            The Lions
           </span>
-          <FactionDots
-            count={totalMajority}
-            active={activeMajority}
-            color="#9C1C2B"
-          />
           <span
-            className="font-serif text-[12px] ml-1"
+            className="font-serif text-[12px]"
             style={{ color: "rgba(156,28,43,0.9)" }}
           >
-            {activeMajority}
+            {activeMajority} remaining
           </span>
         </div>
 
@@ -123,24 +93,18 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
           style={{ background: "rgba(212,175,55,0.15)" }}
         />
 
-        {/* Faction 2 — Azure (Minority) */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <span
-            className="font-serif uppercase tracking-widest text-[9px] max-w-[90px] truncate"
+            className="font-serif uppercase tracking-widest text-[9px]"
             style={{ color: "rgba(42,74,74,0.95)" }}
           >
-            The Azure Coven...
+            The Serpents
           </span>
-          <FactionDots
-            count={totalMinority}
-            active={activeMinority}
-            color="#3D8B8B"
-          />
           <span
-            className="font-serif text-[12px] ml-1"
+            className="font-serif text-[12px]"
             style={{ color: "rgba(42,160,160,0.9)" }}
           >
-            {activeMinority}
+            {activeMinority} remaining
           </span>
         </div>
       </div>
