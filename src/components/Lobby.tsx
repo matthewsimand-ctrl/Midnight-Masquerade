@@ -441,12 +441,16 @@ function SettingToggle({
 }) {
   return (
     <div className="rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-velvet)] p-3">
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <div className="flex-1">
-          <p className="text-xs uppercase tracking-widest text-[var(--color-ivory)] mb-1">{title}</p>
-          <div className="flex items-start gap-1 text-[10px] text-[var(--color-ash)]">
-            <Info size={12} className="mt-[1px] flex-shrink-0" />
-            <span>{helpText}</span>
+          <div className="flex items-center gap-2">
+            <p className="text-xs uppercase tracking-widest text-[var(--color-ivory)]">{title}</p>
+            <span className="group relative inline-flex items-center justify-center w-4 h-4 rounded-full border border-[var(--color-ash)] text-[10px] text-[var(--color-ash)]">
+              <Info size={10} />
+              <span className="absolute left-1/2 top-5 z-20 hidden w-56 -translate-x-1/2 rounded border border-[var(--color-charcoal-warm)] bg-[var(--color-midnight)] px-2 py-1 text-[10px] normal-case tracking-normal text-[var(--color-ivory-antique)] group-hover:block">
+                {helpText}
+              </span>
+            </span>
           </div>
         </div>
         <button
@@ -460,8 +464,8 @@ function SettingToggle({
           aria-label={title}
         >
           <span
-            className={`absolute top-[3px] w-5 h-5 rounded-full bg-[var(--color-ivory)] transition-transform ${
-              enabled ? "translate-x-6" : "translate-x-1"
+            className={`absolute left-[3px] top-[3px] w-5 h-5 rounded-full bg-[var(--color-ivory)] transition-transform ${
+              enabled ? "translate-x-[22px]" : "translate-x-0"
             }`}
           />
         </button>
