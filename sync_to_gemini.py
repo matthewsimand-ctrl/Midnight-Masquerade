@@ -1,18 +1,21 @@
 import os
 import time
+# --- IMPORTING CORRECT SDK ---
 from google import genai
 from google.genai import types
 
-# 1. Get the API Key from environment variables
+# 1. Setup API Key
+# Ensure this is set in GitHub Secrets as GEMINI_API_KEY
 api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
-    raise ValueError("GEMINI_API_KEY environment variable not set in GitHub Secrets")
+    raise ValueError("GEMINI_API_KEY environment variable not set")
 
-# 2. Setup Client with the API Key explicitly passed
+# 2. Initialize Client
+# This explicitly passes the key to the client
 client = genai.Client(api_key=api_key)
 
 # 3. File Path Configuration
-file_path = "src/components/RulesModal.tsx"
+file_path = "src/components/RulesModal.tsx"                
 timestamp = int(time.time())
 display_name = f"RulesModal_{timestamp}.tsx"
 
@@ -20,12 +23,12 @@ print(f"Syncing: {file_path} as {display_name}")
 
 # 4. Upload File
 try:
-    # Use 'file=' to point to the local file
+    # --- USE 'file=' FOR THE NEW SDK ---
     uploaded_file = client.files.upload(
         file=file_path, 
         config=types.UploadFileConfig(
             display_name=display_name,
-            mime_type="text/plain"
+            mime_type="text/plain" # Explicitly set mime type
         )
     )
 
@@ -36,6 +39,7 @@ try:
 
 except Exception as e:
     print(f"❌ Failed to upload: {e}")
-    # Print more details about the error
-    print(f"Error details: {e.__dict__}")
+    # Provide maximum info for debugging
+    import traceback
+    traceback.print_exc()                
     exit(1)
