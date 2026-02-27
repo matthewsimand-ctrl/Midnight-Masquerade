@@ -18,15 +18,15 @@ function loadJsonFile<T>(relativePath: string): T {
   return JSON.parse(fileContents) as T;
 }
 
-const MOTIFS = loadJsonFile<MotifContent[]>("./content/motifs.json");
+const MOTIFS = loadJsonFile<MotifContent[]>("../content/motifs.json");
 
-const IMAGE_CARDS: Card[] = loadJsonFile<JsonCardContent>("./content/images.json").map((url, i) => ({
+const IMAGE_CARDS: Card[] = loadJsonFile<JsonCardContent>("../content/images.json").map((url, i) => ({
   id: `i${i}`,
   type: "Image",
   content: url,
 }));
 
-const WORD_CARDS: Card[] = loadJsonFile<JsonCardContent>("./content/words.json").map((word, i) => ({
+const WORD_CARDS: Card[] = loadJsonFile<JsonCardContent>("../content/words.json").map((word, i) => ({
   id: `w${i}`,
   type: "Word",
   content: word,
