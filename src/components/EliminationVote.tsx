@@ -70,7 +70,7 @@ export function EliminationVote() {
               </div>
             </div>
             
-            <h1 className="text-5xl font-serif text-[var(--color-ivory)] mb-4 animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-1000 fill-mode-both">
+            <h1 className={`text-5xl font-serif ${eliminatedAlliance.colorClass} mb-4 animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-1000 fill-mode-both`}>
               {eliminatedPlayer?.name}
             </h1>
             
@@ -108,7 +108,7 @@ export function EliminationVote() {
                   eliminatedPlayer?.avatar || "🎭"
                 )}
               </div>
-              <h3 className="text-3xl font-serif text-[var(--color-ivory)] mb-2">{eliminatedPlayer?.name}</h3>
+              <h3 className={`text-3xl font-serif ${eliminatedAlliance.colorClass} mb-2`}>{eliminatedPlayer?.name}</h3>
               <p className="text-[var(--color-ash)] text-lg mb-8 font-serif italic">has been eliminated from the ball.</p>
               
               <div className="mb-8 p-4 rounded bg-[var(--color-ballroom)] border border-[var(--color-charcoal-warm)] inline-block">
@@ -125,7 +125,7 @@ export function EliminationVote() {
                 </div>
                 <div>
                   <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Serpents Remaining</p>
-                  <p className="text-4xl font-serif text-[var(--color-ivory)]">{gameState.remainingMinority}</p>
+                  <p className="text-4xl font-serif text-[rgba(42,160,160,0.9)]">{gameState.remainingMinority}</p>
                 </div>
               </div>
             </div>
