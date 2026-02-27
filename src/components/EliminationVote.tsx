@@ -1,6 +1,22 @@
 import { useGameStore } from "../client/store.js";
 import { useState, useEffect } from "react";
 
+const ALLIANCE_DISPLAY: Record<string, { label: string; colorClass: string }> = {
+  majority: { label: "The Lions", colorClass: "text-[var(--color-crimson)]" },
+  lion: { label: "The Lions", colorClass: "text-[var(--color-crimson)]" },
+  lions: { label: "The Lions", colorClass: "text-[var(--color-crimson)]" },
+  minority: { label: "The Serpents", colorClass: "text-[rgb(42,160,160)]" },
+  serpent: { label: "The Serpents", colorClass: "text-[rgb(42,160,160)]" },
+  serpents: { label: "The Serpents", colorClass: "text-[rgb(42,160,160)]" },
+  snake: { label: "The Serpents", colorClass: "text-[rgb(42,160,160)]" },
+  snakes: { label: "The Serpents", colorClass: "text-[rgb(42,160,160)]" },
+};
+
+const getAllianceDisplay = (alliance?: string) => {
+  if (!alliance) return { label: "Unknown Allegiance", colorClass: "text-[var(--color-ash)]" };
+  return ALLIANCE_DISPLAY[alliance.toLowerCase()] ?? { label: alliance, colorClass: "text-[var(--color-ivory)]" };
+};
+
 const isImageAvatar = (avatar?: string) =>
   Boolean(avatar && (avatar.startsWith("/") || avatar.startsWith("http")));
 
@@ -32,6 +48,7 @@ export function EliminationVote() {
 
   if (gameState.eliminatedThisRound) {
     const eliminatedPlayer = gameState.players[gameState.eliminatedThisRound];
+    const eliminatedAlliance = getAllianceDisplay(eliminatedPlayer?.alliance);
     
     if (isRevealing) {
       return (
@@ -49,8 +66,8 @@ export function EliminationVote() {
               {eliminatedPlayer?.name}
             </h1>
             
-            <p className="text-2xl font-serif text-[var(--color-crimson)] animate-in slide-in-from-bottom-4 fade-in duration-1000 delay-[1500ms] fill-mode-both">
-              "{eliminatedPlayer?.alliance === 'Majority' ? 'Crimson Protocol' : 'Obsidian Directive'}"
+            <p className={`text-2xl font-serif animate-in slide-in-from-bottom-4 fade-in duration-1000 delay-[1500ms] fill-mode-both ${eliminatedAlliance.colorClass}`}>
+              "{eliminatedAlliance.label}"
             </p>
             
             <h2 className="absolute top-12 text-5xl font-serif text-[var(--color-gold)] tracking-widest uppercase animate-in slide-in-from-top-8 fade-in duration-1000">
@@ -88,20 +105,18 @@ export function EliminationVote() {
               
               <div className="mb-8 p-4 rounded bg-[var(--color-ballroom)] border border-[var(--color-charcoal-warm)] inline-block">
                 <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-1">True Allegiance</p>
-                <p className={`text-xl font-serif uppercase tracking-widest ${
-                  eliminatedPlayer?.alliance === "Majority" ? "text-[var(--color-gold)]" : "text-[var(--color-ivory)]"
-                }`}>
-                  {eliminatedPlayer?.alliance === "Majority" ? "Crimson Protocol" : "Obsidian Directive"}
+                <p className={`text-xl font-serif uppercase tracking-widest ${eliminatedAlliance.colorClass}`}>
+                  {eliminatedAlliance.label}
                 </p>
               </div>
               
               <div className="flex justify-center gap-12 border-t border-[var(--color-charcoal-warm)] pt-8">
                 <div>
-                  <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Crimson Remaining</p>
+                  <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Lions Remaining</p>
                   <p className="text-4xl font-serif text-[var(--color-gold)]">{gameState.remainingMajority}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Obsidian Remaining</p>
+                  <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Serpents Remaining</p>
                   <p className="text-4xl font-serif text-[var(--color-ivory)]">{gameState.remainingMinority}</p>
                 </div>
               </div>
@@ -219,5 +234,4 @@ export function EliminationVote() {
     </div>
   );
 }
-
 
