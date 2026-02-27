@@ -23,6 +23,12 @@ const rooms: Record<string, GameState> = {};
 
 const AVATARS = ["🎭", "🦊", "🦉", "🦇", "🐺", "🐍", "🦋", "🕷️", "🦚", "🦢"];
 
+function drawReplacementCard(): Card {
+  const sourcePool = Math.random() < 0.5 ? IMAGE_CARDS : WORD_CARDS;
+  const randomCard = sourcePool[Math.floor(Math.random() * sourcePool.length)];
+  return { ...randomCard, id: uuidv4() };
+}
+
 function isMajorityAlliance(alliance?: string) {
   return alliance?.toLowerCase() === "majority";
 }
@@ -171,8 +177,10 @@ export function setupGameSocket(io: Server) {
         if (cardIndex !== -1) {
           const card = player.hand[cardIndex];
           game.sharedCards[socket.id] = card;
-          // ── Remove the card from the player's hand permanently ──
           player.hand.splice(cardIndex, 1);
+          if (game.gameMode === "BattleRoyale") {
+            player.hand.push(drawReplacementCard());
+          }
           broadcastState(io, roomId);
         }
       }
@@ -447,13 +455,16 @@ function startPrivateDance(io: Server, roomId: string) {
   }
   game.dancePairs = pairs;
 
-  // Bots share a random card and remove it from their hand
+  // Bots share a random card and, in Battle Royale, immediately draw a replacement.
   for (const pid of activePlayers) {
     const p = game.players[pid];
     if (p.isBot && p.hand.length > 0 && pairs[pid]) {
       const cardIndex = Math.floor(Math.random() * p.hand.length);
       game.sharedCards[pid] = p.hand[cardIndex];
       p.hand.splice(cardIndex, 1);
+      if (game.gameMode === "BattleRoyale") {
+        p.hand.push(drawReplacementCard());
+      }
     }
   }
 
