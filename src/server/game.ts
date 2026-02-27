@@ -55,6 +55,7 @@ export function setupGameSocket(io: Server) {
           winner: null,
           remainingMajority: 0,
           remainingMinority: 0,
+          consecutiveMajorityEliminations: 0,
         };
       }
 
@@ -130,9 +131,12 @@ export function setupGameSocket(io: Server) {
       const game = rooms[roomId];
       if (game && game.phase === "PrivateDance" && !game.players[socket.id].isEliminated) {
         const player = game.players[socket.id];
-        const card = player.hand.find(c => c.id === cardId);
-        if (card) {
+        const cardIndex = player.hand.findIndex(c => c.id === cardId);
+        if (cardIndex !== -1) {
+          const card = player.hand[cardIndex];
           game.sharedCards[socket.id] = card;
+          // ── Remove the card from the player's hand permanently ──
+          player.hand.splice(cardIndex, 1);
           broadcastState(io, roomId);
         }
       }
@@ -150,13 +154,7 @@ export function setupGameSocket(io: Server) {
       const game = rooms[roomId];
       if (game && game.hostId === socket.id && game.players[playerId]) {
         delete game.players[playerId];
-        if (game.phase === "Lobby") {
-          broadcastState(io, roomId);
-        } else {
-          // If kicked during game, mark as eliminated
-          // But actually let's just delete them and let the game handle it or just broadcast
-          broadcastState(io, roomId);
-        }
+        broadcastState(io, roomId);
       }
     });
 
@@ -171,6 +169,7 @@ export function setupGameSocket(io: Server) {
         game.dancePairs = {};
         game.sharedCards = {};
         game.votes = {};
+        game.consecutiveMajorityEliminations = 0;
         for (const pid in game.players) {
           game.players[pid].isEliminated = false;
           game.players[pid].hand = [];
@@ -304,7 +303,6 @@ function advancePhase(io: Server, roomId: string) {
       break;
     case "EliminationVote":
       if (game.eliminatedThisRound) {
-        // We've already resolved the vote, now we're advancing from the reveal screen
         if (game.winner) {
           game.phase = "GameOver";
         } else {
@@ -314,12 +312,10 @@ function advancePhase(io: Server, roomId: string) {
         }
         broadcastState(io, roomId);
       } else {
-        // We are resolving the vote
         resolveVote(io, roomId);
       }
       break;
     case "GameOver":
-      // Reset game
       break;
   }
 }
@@ -378,17 +374,18 @@ function startPrivateDance(io: Server, roomId: string) {
   const shuffled = [...activePlayers].sort(() => Math.random() - 0.5);
   const pairs: Record<string, string> = {};
   
-  // Create a cycle so everyone shares exactly one card and receives exactly one card
   for (let i = 0; i < shuffled.length; i++) {
     pairs[shuffled[i]] = shuffled[(i + 1) % shuffled.length];
   }
   game.dancePairs = pairs;
 
-  // Bots share cards
+  // Bots share a random card and remove it from their hand
   for (const pid of activePlayers) {
     const p = game.players[pid];
     if (p.isBot && p.hand.length > 0 && pairs[pid]) {
-      game.sharedCards[pid] = p.hand[Math.floor(Math.random() * p.hand.length)];
+      const cardIndex = Math.floor(Math.random() * p.hand.length);
+      game.sharedCards[pid] = p.hand[cardIndex];
+      p.hand.splice(cardIndex, 1);
     }
   }
 
@@ -422,7 +419,6 @@ function startEliminationVote(io: Server, roomId: string) {
   game.phase = "EliminationVote";
   game.votes = {};
 
-  // Bots vote
   const activePlayers = Object.values(game.players).filter(p => !p.isEliminated);
   for (const p of activePlayers) {
     if (p.isBot) {
@@ -475,16 +471,22 @@ function resolveVote(io: Server, roomId: string) {
   game.remainingMajority = numMajority;
   game.remainingMinority = numMinority;
 
+  // Track consecutive majority eliminations for minority win condition.
+  // Minority wins by eliminating majority twice in a row.
+  // Any minority elimination resets the streak.
+  if (eliminatedPlayer.alliance === "Majority") {
+    game.consecutiveMajorityEliminations = (game.consecutiveMajorityEliminations || 0) + 1;
+  } else {
+    game.consecutiveMajorityEliminations = 0;
+  }
+
   if (numMinority === 0) {
+    // Majority wins: all minority eliminated
     game.winner = "Majority";
-  } else if (numMinority > numMajority) {
+  } else if (game.consecutiveMajorityEliminations >= 2) {
+    // Minority wins: eliminated majority twice in a row
     game.winner = "Minority";
   }
-  // Keep phase as EliminationVote so clients can see the result.
-  // The host will click "Continue" to advance the phase.
 
   broadcastState(io, roomId);
 }
-
-
-

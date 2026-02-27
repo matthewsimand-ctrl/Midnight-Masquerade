@@ -15,7 +15,7 @@ export const CUSTOM_MASK_IMAGES: string[] = [
   // "/masks/fox.png",
   // "/masks/raven.png",
   // Add your own paths here ↑
-  /masks/greenlady.png
+  "masks/greenlady.png",
 ];
 
 const EMOJI_AVATARS = ["🎭", "🦊", "🦉", "🦇", "🐺", "🐍", "🦋", "🕷️", "🦚", "🦢"];
