@@ -229,7 +229,6 @@ export default function App() {
 
   const showHeader =
     gameState.phase !== "Lobby" &&
-    gameState.phase !== "Dealing" &&
     gameState.phase !== "GameOver";
 
   return (
