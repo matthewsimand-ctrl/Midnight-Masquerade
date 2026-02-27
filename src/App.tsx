@@ -126,7 +126,7 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
                 </label>
                 <input
                   type="text"
-                  placeholder="Alessandro Moretti..."
+                  placeholder="Barry McKockinner..."
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full bg-[var(--color-velvet)] border border-[var(--color-charcoal-rich)] rounded px-4 py-3 text-[var(--color-ivory)] focus:outline-none focus:border-[var(--color-gold)]"
@@ -140,7 +140,7 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
                   </label>
                   <input
                     type="text"
-                    placeholder="MQN4A7"
+                    placeholder="B00B5"
                     value={roomId}
                     onChange={(e) => setRoomId(e.target.value.toUpperCase())}
                     className="w-full bg-[var(--color-velvet)] border border-[var(--color-charcoal-rich)] rounded px-4 py-3 text-[var(--color-ivory)] font-mono uppercase focus:outline-none focus:border-[var(--color-gold)]"
