@@ -32,6 +32,7 @@
   --animate-card-flip: card-flip 0.6s ease-in-out forwards;
   --animate-shatter: shatter 1.2s cubic-bezier(.4,.2,.8,.6) forwards;
   --animate-bloom: bloom 2s ease-out forwards;
+  --animate-winner-aura: winner-aura 1.8s ease-in-out infinite;
 }
 
 @keyframes shimmer {
@@ -72,6 +73,23 @@
 @keyframes bloom {
   0% { opacity: 0; transform: scale(0.8); }
   100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes winner-aura {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 0 0 rgba(212, 175, 55, 0.25);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 0 24px rgba(232, 198, 112, 0.55);
+  }
+}
+
+.co-winner-card {
+  animation: winner-aura 1.8s ease-in-out infinite;
+  background: linear-gradient(120deg, rgba(212, 175, 55, 0.14), rgba(30, 30, 30, 0.8));
 }
 
 body {
