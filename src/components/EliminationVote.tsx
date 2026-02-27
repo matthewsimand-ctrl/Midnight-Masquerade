@@ -112,11 +112,11 @@ export function EliminationVote() {
               
               <div className="flex justify-center gap-12 border-t border-[var(--color-charcoal-warm)] pt-8">
                 <div>
-                  <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Crimson Remaining</p>
+                  <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Lions Remaining</p>
                   <p className="text-4xl font-serif text-[var(--color-gold)]">{gameState.remainingMajority}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Obsidian Remaining</p>
+                  <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-2">Serpents Remaining</p>
                   <p className="text-4xl font-serif text-[var(--color-ivory)]">{gameState.remainingMinority}</p>
                 </div>
               </div>
