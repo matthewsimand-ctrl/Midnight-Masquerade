@@ -75,13 +75,13 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
         <div className="flex items-center gap-2">
           <span
             className="font-serif uppercase tracking-widest text-[9px]"
-            style={{ color: "rgba(156,28,43,0.9)" }}
+            style={{ color: "var(--color-gold)" }}
           >
             The Lions
           </span>
           <span
             className="font-serif text-[12px]"
-            style={{ color: "rgba(156,28,43,0.9)" }}
+            style={{ color: "var(--color-gold)" }}
           >
             {activeMajority} remaining
           </span>

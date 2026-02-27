@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { GameState, Player, Alliance, Card, JournalEntry, GamePhase, ClientGameState, ClientPlayer } from "../shared/types.js";
+import { GameState, Card, ClientGameState } from "../shared/types.js";
 import { v4 as uuidv4 } from "uuid";
 
 // Mock data for now
@@ -22,6 +22,20 @@ const WORD_CARDS: Card[] = [
 const rooms: Record<string, GameState> = {};
 
 const AVATARS = ["🎭", "🦊", "🦉", "🦇", "🐺", "🐍", "🦋", "🕷️", "🦚", "🦢"];
+
+function getBattleRoyaleSplit(playerCount: number) {
+  if (playerCount % 2 === 0) {
+    return {
+      majority: Math.max(playerCount / 2 + 1, 0),
+      minority: Math.max(playerCount / 2 - 1, 0),
+    };
+  }
+
+  return {
+    majority: Math.ceil(playerCount / 2),
+    minority: Math.floor(playerCount / 2),
+  };
+}
 
 function getAvailableAvatar(game: GameState): string {
   const usedAvatars = Object.values(game.players).map(p => p.avatar);
@@ -55,6 +69,10 @@ export function setupGameSocket(io: Server) {
           winner: null,
           remainingMajority: 0,
           remainingMinority: 0,
+          gameMode: "BattleRoyale",
+          forcedEliminationChooserId: null,
+          forcedEliminationCandidates: [],
+          coWinners: [],
           consecutiveMajorityEliminations: 0,
         };
       }
@@ -127,6 +145,14 @@ export function setupGameSocket(io: Server) {
       }
     });
 
+    socket.on("setGameMode", ({ roomId, gameMode }: { roomId: string, gameMode: "BattleRoyale" | "LionsVsSnakes" }) => {
+      const game = rooms[roomId];
+      if (game && game.hostId === socket.id && game.phase === "Lobby") {
+        game.gameMode = gameMode;
+        broadcastState(io, roomId);
+      }
+    });
+
     socket.on("shareCard", ({ roomId, cardId }: { roomId: string, cardId: string }) => {
       const game = rooms[roomId];
       if (game && game.phase === "PrivateDance" && !game.players[socket.id].isEliminated) {
@@ -158,6 +184,19 @@ export function setupGameSocket(io: Server) {
       }
     });
 
+    socket.on("chooseForcedElimination", ({ roomId, targetId }: { roomId: string, targetId: string }) => {
+      const game = rooms[roomId];
+      if (
+        game &&
+        game.phase === "EliminationVote" &&
+        game.gameMode === "BattleRoyale" &&
+        game.forcedEliminationChooserId === socket.id &&
+        game.forcedEliminationCandidates?.includes(targetId)
+      ) {
+        applyElimination(io, roomId, targetId);
+      }
+    });
+
     socket.on("endGame", ({ roomId }: { roomId: string }) => {
       const game = rooms[roomId];
       if (game && game.hostId === socket.id) {
@@ -170,6 +209,9 @@ export function setupGameSocket(io: Server) {
         game.sharedCards = {};
         game.votes = {};
         game.consecutiveMajorityEliminations = 0;
+        game.forcedEliminationChooserId = null;
+        game.forcedEliminationCandidates = [];
+        game.coWinners = [];
         for (const pid in game.players) {
           game.players[pid].isEliminated = false;
           game.players[pid].hand = [];
@@ -225,6 +267,10 @@ function broadcastState(io: Server, roomId: string) {
       remainingMajority: game.remainingMajority,
       remainingMinority: game.remainingMinority,
       allPairsShared: false,
+      gameMode: game.gameMode,
+      forcedEliminationChooserId: game.forcedEliminationChooserId,
+      forcedEliminationCandidates: game.forcedEliminationCandidates,
+      coWinners: game.coWinners,
       players: {},
     };
 
@@ -302,8 +348,14 @@ function advancePhase(io: Server, roomId: string) {
       startEliminationVote(io, roomId);
       break;
     case "EliminationVote":
+      if (game.gameMode === "BattleRoyale" && game.forcedEliminationChooserId) {
+        broadcastState(io, roomId);
+        break;
+      }
       if (game.eliminatedThisRound) {
         if (game.winner) {
+          game.phase = "GameOver";
+        } else if (game.gameMode === "BattleRoyale" && (game.coWinners?.length || 0) === 2) {
           game.phase = "GameOver";
         } else {
           game.round++;
@@ -332,15 +384,21 @@ function startGame(io: Server, roomId: string) {
   let majSize = 3;
   let minSize = 1;
 
-  if (playerCount === 5) { majSize = 3; minSize = 2; }
-  else if (playerCount === 6) { majSize = 4; minSize = 2; }
-  else if (playerCount === 7) { majSize = 4; minSize = 3; }
-  else if (playerCount === 8) { majSize = 5; minSize = 3; }
-  else if (playerCount === 9) { 
-    if (Math.random() > 0.5) { majSize = 5; minSize = 4; }
-    else { majSize = 6; minSize = 3; }
+  if (game.gameMode === "BattleRoyale") {
+    const split = getBattleRoyaleSplit(playerCount);
+    majSize = split.majority;
+    minSize = split.minority;
+  } else {
+    if (playerCount === 5) { majSize = 3; minSize = 2; }
+    else if (playerCount === 6) { majSize = 4; minSize = 2; }
+    else if (playerCount === 7) { majSize = 4; minSize = 3; }
+    else if (playerCount === 8) { majSize = 5; minSize = 3; }
+    else if (playerCount === 9) {
+      if (Math.random() > 0.5) { majSize = 5; minSize = 4; }
+      else { majSize = 6; minSize = 3; }
+    }
+    else if (playerCount >= 10) { majSize = 6; minSize = 4; }
   }
-  else if (playerCount >= 10) { majSize = 6; minSize = 4; }
 
   game.remainingMajority = majSize;
   game.remainingMinority = minSize;
@@ -418,6 +476,8 @@ function startEliminationVote(io: Server, roomId: string) {
   const game = rooms[roomId];
   game.phase = "EliminationVote";
   game.votes = {};
+  game.forcedEliminationChooserId = null;
+  game.forcedEliminationCandidates = [];
 
   const activePlayers = Object.values(game.players).filter(p => !p.isEliminated);
   for (const p of activePlayers) {
@@ -460,13 +520,73 @@ function resolveVote(io: Server, roomId: string) {
     eliminatedId = tied[Math.floor(Math.random() * tied.length)];
   }
 
+  if (game.gameMode === "BattleRoyale") {
+    const votedPlayer = game.players[eliminatedId];
+
+    if (votedPlayer.alliance === "Minority") {
+      applyElimination(io, roomId, eliminatedId);
+      return;
+    }
+
+    const activeMajorityIds = Object.values(game.players)
+      .filter((p) => !p.isEliminated && p.alliance === "Majority" && p.id !== eliminatedId)
+      .map((p) => p.id);
+
+    game.forcedEliminationChooserId = eliminatedId;
+    game.forcedEliminationCandidates = activeMajorityIds;
+
+    if (activeMajorityIds.length === 0) {
+      applyElimination(io, roomId, eliminatedId);
+      return;
+    }
+
+    if (game.players[eliminatedId].isBot) {
+      const selectedTarget = activeMajorityIds[Math.floor(Math.random() * activeMajorityIds.length)];
+      applyElimination(io, roomId, selectedTarget);
+      return;
+    }
+
+    broadcastState(io, roomId);
+    return;
+  }
+
+  applyElimination(io, roomId, eliminatedId);
+}
+
+function applyElimination(io: Server, roomId: string, eliminatedId: string) {
+  const game = rooms[roomId];
+  if (!game || game.players[eliminatedId].isEliminated) return;
+
   game.eliminatedThisRound = eliminatedId;
   const eliminatedPlayer = game.players[eliminatedId];
   eliminatedPlayer.isEliminated = true;
+  game.forcedEliminationChooserId = null;
+  game.forcedEliminationCandidates = [];
 
   const activePlayers = Object.values(game.players).filter(p => !p.isEliminated);
-  const numMajority = activePlayers.filter(p => p.alliance === "Majority").length;
-  const numMinority = activePlayers.filter(p => p.alliance === "Minority").length;
+  const activeCount = activePlayers.length;
+
+  if (game.gameMode === "BattleRoyale" && activeCount <= 2) {
+    game.remainingMajority = activePlayers.filter(p => p.alliance === "Majority").length;
+    game.remainingMinority = activePlayers.filter(p => p.alliance === "Minority").length;
+    game.coWinners = activePlayers.map((p) => p.id);
+    game.winner = null;
+    broadcastState(io, roomId);
+    return;
+  }
+
+  if (game.gameMode === "BattleRoyale") {
+    const split = getBattleRoyaleSplit(activeCount);
+    const shuffledActiveIds = activePlayers.map((p) => p.id).sort(() => Math.random() - 0.5);
+    for (let i = 0; i < shuffledActiveIds.length; i++) {
+      const pid = shuffledActiveIds[i];
+      game.players[pid].alliance = i < split.majority ? "Majority" : "Minority";
+    }
+  }
+
+  const refreshedActivePlayers = Object.values(game.players).filter(p => !p.isEliminated);
+  const numMajority = refreshedActivePlayers.filter(p => p.alliance === "Majority").length;
+  const numMinority = refreshedActivePlayers.filter(p => p.alliance === "Minority").length;
 
   game.remainingMajority = numMajority;
   game.remainingMinority = numMinority;
@@ -480,12 +600,12 @@ function resolveVote(io: Server, roomId: string) {
     game.consecutiveMajorityEliminations = 0;
   }
 
-  if (numMinority === 0) {
-    // Majority wins: all minority eliminated
-    game.winner = "Majority";
-  } else if (game.consecutiveMajorityEliminations >= 2) {
-    // Minority wins: eliminated majority twice in a row
-    game.winner = "Minority";
+  if (game.gameMode === "LionsVsSnakes") {
+    if (numMinority === 0) {
+      game.winner = "Majority";
+    } else if (game.consecutiveMajorityEliminations >= 2) {
+      game.winner = "Minority";
+    }
   }
 
   broadcastState(io, roomId);

@@ -2,9 +2,9 @@ import { useGameStore } from "../client/store.js";
 import { useState, useEffect } from "react";
 
 const ALLIANCE_DISPLAY: Record<string, { label: string; colorClass: string }> = {
-  majority: { label: "The Lions", colorClass: "text-[rgba(156,28,43,0.9)]" },
-  lion: { label: "The Lions", colorClass: "text-[rgba(156,28,43,0.9)]" },
-  lions: { label: "The Lions", colorClass: "text-[rgba(156,28,43,0.9)]" },
+  majority: { label: "The Lions", colorClass: "text-[var(--color-gold)]" },
+  lion: { label: "The Lions", colorClass: "text-[var(--color-gold)]" },
+  lions: { label: "The Lions", colorClass: "text-[var(--color-gold)]" },
   minority: { label: "The Serpents", colorClass: "text-[rgba(42,74,74,0.95)]" },
   serpent: { label: "The Serpents", colorClass: "text-[rgba(42,74,74,0.95)]" },
   serpents: { label: "The Serpents", colorClass: "text-[rgba(42,74,74,0.95)]" },
@@ -26,7 +26,7 @@ const getAvatarLabel = (avatar?: string) => {
 };
 
 export function EliminationVote() {
-  const { gameState, vote, advancePhase } = useGameStore();
+  const { gameState, vote, advancePhase, chooseForcedElimination } = useGameStore();
   const [selectedVote, setSelectedVote] = useState<string | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
   
@@ -45,6 +45,45 @@ export function EliminationVote() {
   const isHost = me?.isHost;
   
   const myVote = me ? gameState.votes[me.id] : null;
+  const isForcedChooser = me && gameState.forcedEliminationChooserId === me.id;
+
+  if (isForcedChooser && gameState.forcedEliminationCandidates && gameState.forcedEliminationCandidates.length > 0) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
+        <div className="velvet-texture"></div>
+        <div className="z-10 text-center max-w-3xl w-full">
+          <h2 className="text-3xl font-serif text-[var(--color-gold)] mb-3 uppercase tracking-widest">Your Name Was Called</h2>
+          <p className="text-[var(--color-ivory-antique)] mb-8">As a Majority player in Battle Royale, you survive and must choose another Majority player to eliminate.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {gameState.forcedEliminationCandidates.map((candidateId) => {
+              const p = gameState.players[candidateId];
+              if (!p) return null;
+              return (
+                <button
+                  key={candidateId}
+                  onClick={() => chooseForcedElimination(candidateId)}
+                  className="rounded-lg border border-[var(--color-crimson)]/50 bg-[var(--color-velvet)] p-4 hover:bg-[var(--color-crimson)]/10"
+                >
+                  <div className="text-3xl mb-2">{p.avatar || "🎭"}</div>
+                  <p className="font-serif text-[var(--color-ivory)]">{p.name}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (gameState.forcedEliminationChooserId && !isForcedChooser) {
+    const chooser = gameState.players[gameState.forcedEliminationChooserId];
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)]">
+        <h2 className="text-2xl font-serif text-[var(--color-gold)] mb-2">Battle Royale Twist</h2>
+        <p className="text-[var(--color-ivory-antique)]">{chooser?.name || "A player"} was voted but survives and is selecting another Majority player to eliminate.</p>
+      </div>
+    );
+  }
 
   if (gameState.eliminatedThisRound) {
     const eliminatedPlayer = gameState.players[gameState.eliminatedThisRound];

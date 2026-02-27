@@ -7,7 +7,11 @@ export function GameOver() {
   const isMajorityWin = gameState.winner === "Majority";
   const me = Object.values(gameState.players).find(p => p.isMe);
   const myAlliance = me?.alliance;
-  const iWon = myAlliance === gameState.winner;
+  const iWon = gameState.gameMode === "BattleRoyale"
+    ? Boolean(me && (gameState.coWinners || []).includes(me.id))
+    : myAlliance === gameState.winner;
+  const isBattleRoyale = gameState.gameMode === "BattleRoyale";
+  const coWinners = (gameState.coWinners || []).map((id) => gameState.players[id]).filter(Boolean);
 
   return (
     <div className={`flex-1 flex flex-col items-center justify-center p-8 relative overflow-hidden ${
@@ -32,20 +36,31 @@ export function GameOver() {
 
       <div className="text-center max-w-4xl w-full z-10 animate-in slide-in-from-top-12 duration-1000">
         <h1 className={`text-5xl md:text-7xl font-serif uppercase tracking-[0.1em] mb-4 ${
-          isMajorityWin ? "text-[var(--color-gold)] drop-shadow-[0_0_20px_rgba(212,175,55,0.5)]" : "text-[var(--color-ivory)] drop-shadow-[0_0_20px_rgba(245,240,232,0.5)]"
+          isMajorityWin || isBattleRoyale ? "text-[var(--color-gold)] drop-shadow-[0_0_20px_rgba(212,175,55,0.5)]" : "text-[var(--color-ivory)] drop-shadow-[0_0_20px_rgba(245,240,232,0.5)]"
         }`}>
-          {isMajorityWin ? "CRIMSON PROTOCOL VICTORIOUS" : "THE OBSIDIAN DIRECTIVE PREVAILS"}
+          {isBattleRoyale ? "BATTLE ROYALE COMPLETE" : isMajorityWin ? "CRIMSON PROTOCOL VICTORIOUS" : "THE OBSIDIAN DIRECTIVE PREVAILS"}
         </h1>
         
-        {!isMajorityWin && (
+        {!isBattleRoyale && !isMajorityWin && (
           <p className="text-xl font-serif italic text-[var(--color-ivory-antique)] mb-12">
             Against all odds, the shadow alliance claimed victory
           </p>
         )}
-        {isMajorityWin && (
+        {!isBattleRoyale && isMajorityWin && (
           <p className="text-xl font-serif italic text-[var(--color-gold-light)] mb-12">
             The majority has purged the masquerade
           </p>
+        )}
+        {isBattleRoyale && (
+          <p className="text-xl font-serif italic text-[var(--color-gold-light)] mb-12">
+            Two survivors remain. They are declared co-winners.
+          </p>
+        )}
+
+        {isBattleRoyale && coWinners.length > 0 && (
+          <div className="mb-8 text-[var(--color-ivory)]">
+            Co-Winners: {coWinners.map((p) => p.name).join(" & ")}
+          </div>
         )}
 
         {me && !me.isHost && (
@@ -134,5 +149,3 @@ export function GameOver() {
     </div>
   );
 }
-
-
