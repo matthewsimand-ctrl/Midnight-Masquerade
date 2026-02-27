@@ -19,7 +19,7 @@ const RULES_BY_MODE: Record<GameMode, { title: string; bullets: string[] }> = {
       "Round flow is unchanged: dance, share, gossip, and vote each round.",
       "Any voted player is eliminated immediately.",
       "Lions (Majority) win if all Snakes (Minority) are eliminated.",
-      "Snakes (Minority) win by orchestrating two Majority eliminations in a row.",
+      "Snakes (Minority) win by orchestrating two Lion (Majority) eliminations in a row.",
     ],
   },
 };
