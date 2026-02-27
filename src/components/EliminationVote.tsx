@@ -2,14 +2,14 @@ import { useGameStore } from "../client/store.js";
 import { useState, useEffect } from "react";
 
 const ALLIANCE_DISPLAY: Record<string, { label: string; colorClass: string }> = {
-  majority: { label: "The Lions", colorClass: "text-[var(--color-gold)]" },
-  lion: { label: "The Lions", colorClass: "text-[var(--color-gold)]" },
-  lions: { label: "The Lions", colorClass: "text-[var(--color-gold)]" },
-  minority: { label: "The Serpents", colorClass: "text-[var(--color-ivory)]" },
-  serpent: { label: "The Serpents", colorClass: "text-[var(--color-ivory)]" },
-  serpents: { label: "The Serpents", colorClass: "text-[var(--color-ivory)]" },
-  snake: { label: "The Serpents", colorClass: "text-[var(--color-ivory)]" },
-  snakes: { label: "The Serpents", colorClass: "text-[var(--color-ivory)]" },
+  majority: { label: "The Lions", colorClass: "text-[rgba(156,28,43,0.9)]" },
+  lion: { label: "The Lions", colorClass: "text-[rgba(156,28,43,0.9)]" },
+  lions: { label: "The Lions", colorClass: "text-[rgba(156,28,43,0.9)]" },
+  minority: { label: "The Serpents", colorClass: "text-[rgba(42,74,74,0.95)]" },
+  serpent: { label: "The Serpents", colorClass: "text-[rgba(42,74,74,0.95)]" },
+  serpents: { label: "The Serpents", colorClass: "text-[rgba(42,74,74,0.95)]" },
+  snake: { label: "The Serpents", colorClass: "text-[rgba(42,74,74,0.95)]" },
+  snakes: { label: "The Serpents", colorClass: "text-[rgba(42,74,74,0.95)]" },
 };
 
 const getAllianceDisplay = (alliance?: string) => {
@@ -57,8 +57,16 @@ export function EliminationVote() {
           
           <div className="z-10 flex flex-col items-center animate-in fade-in duration-1000">
             <div className="relative w-32 h-32 mb-8">
-              <div className="absolute inset-0 flex items-center justify-center text-6xl animate-shatter">
-                🎭
+              <div className="absolute inset-0 flex items-center justify-center text-6xl animate-shatter rounded-full bg-[var(--color-charcoal-rich)] overflow-hidden">
+                {isImageAvatar(eliminatedPlayer?.avatar) ? (
+                  <img
+                    src={eliminatedPlayer?.avatar}
+                    alt={eliminatedPlayer?.name || "Mask"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  eliminatedPlayer?.avatar || "🎭"
+                )}
               </div>
             </div>
             
@@ -66,7 +74,7 @@ export function EliminationVote() {
               {eliminatedPlayer?.name}
             </h1>
             
-            <p className="text-2xl font-serif text-[var(--color-crimson)] animate-in slide-in-from-bottom-4 fade-in duration-1000 delay-[1500ms] fill-mode-both">
+            <p className={`text-2xl font-serif ${eliminatedAlliance.colorClass} animate-in slide-in-from-bottom-4 fade-in duration-1000 delay-[1500ms] fill-mode-both`}>
               "{eliminatedAlliance.label}"
             </p>
             
@@ -234,4 +242,3 @@ export function EliminationVote() {
     </div>
   );
 }
-
