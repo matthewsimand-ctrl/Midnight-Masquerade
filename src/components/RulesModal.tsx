@@ -8,7 +8,7 @@ const RULES_BY_MODE: Record<GameMode, { title: string; bullets: string[] }> = {
       "Round flow stays the same: reveal your motif, dance, share one card, gossip, then vote.",
       "If the voted player is Minority, they are eliminated immediately.",
       "If the voted player is Majority, they survive and must choose another Majority player to eliminate.",
-      "After each elimination, alliances rebalance: even survivor counts use n/2 + 1 Majority and n/2 - 1 Minority; odd counts use ceil/floor.",
+      "After each elimination, alliances rebalance: even survivor counts means there will be 2 more Majority than Minority. Odd survivors counts results in 1 more Majority than Minority.",
       "The game ends when exactly two players remain. Those two are co-winners.",
     ],
   },
