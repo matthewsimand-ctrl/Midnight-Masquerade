@@ -187,7 +187,7 @@ export default function App() {
     return (
       <Home
         onJoin={(roomId, name) => {
-          connect(roomId, name, "mask1");
+          connect(roomId, name, "🎭");
           setJoined(true);
         }}
       />
