@@ -16,6 +16,7 @@ interface GameStore {
   endGame: () => void;
   setGameMode: (gameMode: "BattleRoyale" | "LionsVsSnakes") => void;
   chooseForcedElimination: (targetId: string) => void;
+  submitAllianceGuess: (alliance: "Majority" | "Minority") => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -103,6 +104,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const { socket, gameState } = get();
     if (socket && gameState) {
       socket.emit("chooseForcedElimination", { roomId: gameState.roomId, targetId });
+    }
+  },
+  submitAllianceGuess: (alliance) => {
+    const { socket, gameState } = get();
+    if (socket && gameState) {
+      socket.emit("submitAllianceGuess", { roomId: gameState.roomId, alliance });
     }
   },
 }));
