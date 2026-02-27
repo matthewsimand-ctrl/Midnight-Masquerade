@@ -1,5 +1,23 @@
 import { useGameStore } from "../client/store.js";
 
+function resolveAvatarSrc(avatar?: string) {
+  if (!avatar) return null;
+  if (
+    avatar.startsWith("/") ||
+    avatar.startsWith("http") ||
+    avatar.startsWith("data:") ||
+    avatar.startsWith("blob:")
+  ) {
+    return avatar;
+  }
+
+  if (/\.(png|jpe?g|gif|webp|svg)$/i.test(avatar)) {
+    return `/masks/${avatar}`;
+  }
+
+  return null;
+}
+
 export function GameOver() {
   const { gameState } = useGameStore();
   if (!gameState) return null;
@@ -12,6 +30,39 @@ export function GameOver() {
     : myAlliance === gameState.winner;
   const isBattleRoyale = gameState.gameMode === "BattleRoyale";
   const coWinners = (gameState.coWinners || []).map((id) => gameState.players[id]).filter(Boolean);
+  const coWinnerIds = gameState.coWinners || [];
+
+  const renderPlayerRow = (p: (typeof gameState.players)[string], borderClass: string) => {
+    const avatarSrc = resolveAvatarSrc(p.avatar);
+    const isCoWinner = isBattleRoyale && coWinnerIds.includes(p.id);
+
+    return (
+      <li
+        key={p.id}
+        className={`flex items-center gap-4 p-3 rounded bg-[var(--color-ballroom)] border ${
+          isCoWinner
+            ? "co-winner-card border-[var(--color-gold)]/70 shadow-[0_0_24px_rgba(212,175,55,0.35)]"
+            : borderClass
+        }`}
+      >
+        <div className="w-10 h-10 rounded-full bg-[var(--color-charcoal-rich)] flex items-center justify-center text-lg">
+          {avatarSrc ? (
+            <img src={avatarSrc} alt={`${p.name} avatar`} className="w-full h-full object-cover rounded-full" />
+          ) : (
+            p.avatar || "🎭"
+          )}
+        </div>
+        <div className="flex-1">
+          <p className={`font-serif ${p.isEliminated ? "text-[var(--color-ash)] line-through" : "text-[var(--color-ivory)]"}`}>
+            {p.name} {p.isMe && <span className="text-[10px] uppercase tracking-widest ml-2 text-[var(--color-gold)]">You</span>}
+          </p>
+          <p className="text-[10px] text-[var(--color-ash)] uppercase tracking-widest mt-1">
+            {p.isEliminated ? "Eliminated" : "Survived"}
+          </p>
+        </div>
+      </li>
+    );
+  };
 
   return (
     <div className={`flex-1 flex flex-col items-center justify-center p-8 relative overflow-hidden ${
@@ -80,23 +131,9 @@ export function GameOver() {
               Crimson Protocol
             </h3>
             <ul className="space-y-4 text-left">
-              {Object.values(gameState.players).filter(p => p.alliance === "Majority").map(p => (
-                <li key={p.id} className={`flex items-center gap-4 p-3 rounded bg-[var(--color-ballroom)] border ${
-                  isMajorityWin ? "border-[var(--color-gold)]/20" : "border-[var(--color-charcoal-warm)]"
-                }`}>
-                  <div className="w-10 h-10 rounded-full bg-[var(--color-charcoal-rich)] flex items-center justify-center text-lg">
-                    {p.avatar || "🎭"}
-                  </div>
-                  <div className="flex-1">
-                    <p className={`font-serif ${p.isEliminated ? "text-[var(--color-ash)] line-through" : "text-[var(--color-ivory)]"}`}>
-                      {p.name} {p.isMe && <span className="text-[10px] uppercase tracking-widest ml-2 text-[var(--color-gold)]">You</span>}
-                    </p>
-                    <p className="text-[10px] text-[var(--color-ash)] uppercase tracking-widest mt-1">
-                      {p.isEliminated ? "Eliminated" : "Survived"}
-                    </p>
-                  </div>
-                </li>
-              ))}
+              {Object.values(gameState.players)
+                .filter(p => p.alliance === "Majority")
+                .map((p) => renderPlayerRow(p, isMajorityWin ? "border-[var(--color-gold)]/20" : "border-[var(--color-charcoal-warm)]"))}
             </ul>
           </div>
 
@@ -110,23 +147,9 @@ export function GameOver() {
               Obsidian Directive
             </h3>
             <ul className="space-y-4 text-left">
-              {Object.values(gameState.players).filter(p => p.alliance === "Minority").map(p => (
-                <li key={p.id} className={`flex items-center gap-4 p-3 rounded bg-[var(--color-ballroom)] border ${
-                  !isMajorityWin ? "border-[var(--color-ivory)]/20" : "border-[var(--color-charcoal-warm)]"
-                }`}>
-                  <div className="w-10 h-10 rounded-full bg-[var(--color-charcoal-rich)] flex items-center justify-center text-lg">
-                    {p.avatar || "🎭"}
-                  </div>
-                  <div className="flex-1">
-                    <p className={`font-serif ${p.isEliminated ? "text-[var(--color-ash)] line-through" : "text-[var(--color-ivory)]"}`}>
-                      {p.name} {p.isMe && <span className="text-[10px] uppercase tracking-widest ml-2 text-[var(--color-gold)]">You</span>}
-                    </p>
-                    <p className="text-[10px] text-[var(--color-ash)] uppercase tracking-widest mt-1">
-                      {p.isEliminated ? "Eliminated" : "Survived"}
-                    </p>
-                  </div>
-                </li>
-              ))}
+              {Object.values(gameState.players)
+                .filter(p => p.alliance === "Minority")
+                .map((p) => renderPlayerRow(p, !isMajorityWin ? "border-[var(--color-ivory)]/20" : "border-[var(--color-charcoal-warm)]"))}
             </ul>
           </div>
         </div>

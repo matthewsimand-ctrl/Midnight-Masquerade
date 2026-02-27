@@ -587,6 +587,7 @@ function applyElimination(io: Server, roomId: string, eliminatedId: string) {
     game.remainingMinority = activePlayers.filter(p => p.alliance === "Minority").length;
     game.coWinners = activePlayers.map((p) => p.id);
     game.winner = null;
+    game.phase = "GameOver";
     broadcastState(io, roomId);
     return;
   }
