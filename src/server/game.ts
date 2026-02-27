@@ -494,6 +494,15 @@ function startEliminationVote(io: Server, roomId: string) {
 
 function resolveVote(io: Server, roomId: string) {
   const game = rooms[roomId];
+  if (!game) return;
+
+  const activePlayerIds = Object.values(game.players)
+    .filter((player) => !player.isEliminated)
+    .map((player) => player.id);
+
+  if (activePlayerIds.length === 0) {
+    return;
+  }
   
   const voteCounts: Record<string, number> = {};
   for (const voterId in game.votes) {
@@ -518,6 +527,10 @@ function resolveVote(io: Server, roomId: string) {
   if (tie || !eliminatedId) {
     const tied = Object.keys(voteCounts).filter(id => voteCounts[id] === maxVotes);
     eliminatedId = tied[Math.floor(Math.random() * tied.length)];
+  }
+
+  if (!eliminatedId) {
+    eliminatedId = activePlayerIds[Math.floor(Math.random() * activePlayerIds.length)];
   }
 
   if (game.gameMode === "BattleRoyale") {
