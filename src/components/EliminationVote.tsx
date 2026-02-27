@@ -25,6 +25,9 @@ const getAvatarLabel = (avatar?: string) => {
   return avatar.split("/").pop()?.replace(/\.\w+$/, "") || "custom mask";
 };
 
+
+const ALLIANCE_MOTIF_ORDER = ["Majority", "Minority"] as const;
+
 export function EliminationVote() {
   const { gameState, vote, advancePhase, chooseForcedElimination } = useGameStore();
   const [selectedVote, setSelectedVote] = useState<string | null>(null);
@@ -162,6 +165,25 @@ export function EliminationVote() {
                 <p className="text-sm text-[var(--color-ash)] font-serif mb-6">
                   These counts show how many players will be on each allegiance in the next round.
                 </p>
+              )}
+
+              {gameState.revealedAllianceMotifs && (
+                <div className="mb-8 rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-ballroom)]/80 p-5 text-left">
+                  <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-4 text-center">Round Motifs Revealed</p>
+                  <div className="space-y-3">
+                    {ALLIANCE_MOTIF_ORDER.map((alliance) => {
+                      const motif = gameState.revealedAllianceMotifs?.[alliance];
+                      if (!motif) return null;
+                      const allianceDisplay = getAllianceDisplay(alliance);
+                      return (
+                        <div key={alliance}>
+                          <p className={`text-xs uppercase tracking-widest ${allianceDisplay.colorClass}`}>{allianceDisplay.label}</p>
+                          <p className="text-[var(--color-ivory-antique)] font-serif">{motif}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
 
               <div className="flex justify-center gap-12 border-t border-[var(--color-charcoal-warm)] pt-8">
