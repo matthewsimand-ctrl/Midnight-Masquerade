@@ -91,12 +91,6 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
             >
               Enter the Ball
             </button>
-            <button
-              onClick={() => setMode("join")}
-              className="w-full bg-transparent border border-[var(--color-gold)]/50 text-[var(--color-gold)] font-serif uppercase tracking-widest py-3 px-8 rounded hover:bg-[var(--color-gold)]/10 transition-colors"
-            >
-              Join a Room
-            </button>
           </div>
         )}
 
@@ -259,7 +253,7 @@ export default function App() {
       {isHost && gameState.phase !== "Lobby" && gameState.phase !== "GameOver" && (
         <button
           onClick={() => setShowEndConfirm(true)}
-          className="fixed top-20 left-4 z-50 bg-[var(--color-charcoal-rich)] border border-[var(--color-crimson)]/50 text-[var(--color-ash)] hover:text-[var(--color-crimson)] px-3 py-1.5 rounded text-xs font-serif uppercase tracking-widest transition-colors shadow-lg"
+          className="fixed top-32 left-4 z-50 bg-[var(--color-charcoal-rich)] border border-[var(--color-crimson)]/50 text-[var(--color-ash)] hover:text-[var(--color-crimson)] px-3 py-1.5 rounded text-xs font-serif uppercase tracking-widest transition-colors shadow-lg"
         >
           End Game
         </button>

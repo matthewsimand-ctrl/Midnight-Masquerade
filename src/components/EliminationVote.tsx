@@ -45,6 +45,7 @@ export function EliminationVote() {
   const isHost = me?.isHost;
   
   const myVote = me ? gameState.votes[me.id] : null;
+  const allVotesLocked = activePlayers.every((player) => Boolean(gameState.votes[player.id]));
   const isForcedChooser = me && gameState.forcedEliminationChooserId === me.id;
 
   if (isForcedChooser && gameState.forcedEliminationCandidates && gameState.forcedEliminationCandidates.length > 0) {
@@ -195,7 +196,7 @@ export function EliminationVote() {
         <div className="velvet-texture"></div>
         <h2 className="text-2xl text-[var(--color-ash)] font-serif mb-4 uppercase tracking-widest z-10">You are eliminated.</h2>
         <p className="text-[var(--color-ivory-antique)] z-10">Watching the vote...</p>
-        {isHost && (
+        {isHost && allVotesLocked && (
           <button
             onClick={() => advancePhase()}
             className="mt-12 px-8 py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform z-10"
@@ -274,7 +275,12 @@ export function EliminationVote() {
             </div>
           )}
 
-          {isHost && (
+          {isHost && !allVotesLocked && (
+            <div className="text-[var(--color-ash)] font-serif italic">
+              Waiting for everyone to lock in...
+            </div>
+          )}
+          {isHost && allVotesLocked && (
             <button
               onClick={() => advancePhase()}
               className="px-8 py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform"
