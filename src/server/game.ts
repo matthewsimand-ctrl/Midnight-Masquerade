@@ -312,7 +312,7 @@ function broadcastState(io: Server, roomId: string) {
       forcedEliminationChooserId: game.forcedEliminationChooserId,
       forcedEliminationCandidates: game.forcedEliminationCandidates,
       coWinners: game.coWinners,
-      revealedAllianceMotifs: game.eliminatedThisRound ? game.allianceMotifs : undefined,
+      revealedAllianceMotifs: (game.phase === "EliminationVote" || game.phase === "GameOver" || game.eliminatedThisRound) ? game.allianceMotifs : undefined,
       players: {},
     };
 

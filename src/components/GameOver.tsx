@@ -121,6 +121,27 @@ export function GameOver() {
             {iWon ? "You Survived the Night" : "Your Alliance Has Fallen"}
           </div>
         )}
+
+        {gameState.revealedAllianceMotifs && (
+          <div className="mb-12 rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-ballroom)]/80 p-5 text-left max-w-2xl mx-auto">
+            <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-4 text-center">Round Motifs Revealed</p>
+            <div className="space-y-3">
+              {["Majority", "Minority"].map((alliance) => {
+                const motif = gameState.revealedAllianceMotifs?.[alliance];
+                if (!motif) return null;
+                const isMajority = alliance === "Majority";
+                const label = isMajority ? "The Lions" : "The Serpents";
+                const colorClass = isMajority ? "text-[var(--color-gold)]" : "text-[rgba(42,74,74,0.95)]";
+                return (
+                  <div key={alliance}>
+                    <p className={`text-xs uppercase tracking-widest ${colorClass}`}>{label}</p>
+                    <p className="text-[var(--color-ivory-antique)] font-serif">{motif}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
         
         <div className="bg-[var(--color-velvet)]/80 backdrop-blur-md border border-[var(--color-charcoal-rich)] p-8 rounded-lg shadow-2xl mb-12 flex flex-col md:flex-row gap-8">
           {/* Majority Column */}

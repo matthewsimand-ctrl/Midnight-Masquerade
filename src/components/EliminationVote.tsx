@@ -25,7 +25,6 @@ const getAvatarLabel = (avatar?: string) => {
   return avatar.split("/").pop()?.replace(/\.\w+$/, "") || "custom mask";
 };
 
-
 const ALLIANCE_MOTIF_ORDER = ["Majority", "Minority"] as const;
 
 export function EliminationVote() {
@@ -58,6 +57,26 @@ export function EliminationVote() {
         <div className="z-10 text-center max-w-3xl w-full">
           <h2 className="text-3xl font-serif text-[var(--color-gold)] mb-3 uppercase tracking-widest">Your Name Was Called</h2>
           <p className="text-[var(--color-ivory-antique)] mb-8">As a Majority player in Battle Royale, you survive and must choose another Majority player to eliminate.</p>
+          
+          {gameState.revealedAllianceMotifs && (
+            <div className="mb-8 rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-ballroom)]/80 p-5 text-left max-w-2xl mx-auto">
+              <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-4 text-center">Round Motifs Revealed</p>
+              <div className="space-y-3">
+                {ALLIANCE_MOTIF_ORDER.map((alliance) => {
+                  const motif = gameState.revealedAllianceMotifs?.[alliance];
+                  if (!motif) return null;
+                  const allianceDisplay = getAllianceDisplay(alliance);
+                  return (
+                    <div key={alliance}>
+                      <p className={`text-xs uppercase tracking-widest ${allianceDisplay.colorClass}`}>{allianceDisplay.label}</p>
+                      <p className="text-[var(--color-ivory-antique)] font-serif">{motif}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {gameState.forcedEliminationCandidates.map((candidateId) => {
               const p = gameState.players[candidateId];
@@ -237,8 +256,27 @@ export function EliminationVote() {
       
       <div className="text-center max-w-4xl w-full z-10">
         <h2 className="text-3xl text-[var(--color-ivory)] font-serif mb-2 uppercase tracking-widest animate-in slide-in-from-top-8">Choose Who to Unmask</h2>
-        <p className="text-[var(--color-ash)] mb-12 italic font-serif">Cast your vote. Someone must leave the ball.</p>
+        <p className="text-[var(--color-ash)] mb-8 italic font-serif">Cast your vote. Someone must leave the ball.</p>
         
+        {gameState.revealedAllianceMotifs && (
+          <div className="mb-8 rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-ballroom)]/80 p-5 text-left max-w-2xl mx-auto">
+            <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-4 text-center">Round Motifs Revealed</p>
+            <div className="space-y-3">
+              {ALLIANCE_MOTIF_ORDER.map((alliance) => {
+                const motif = gameState.revealedAllianceMotifs?.[alliance];
+                if (!motif) return null;
+                const allianceDisplay = getAllianceDisplay(alliance);
+                return (
+                  <div key={alliance}>
+                    <p className={`text-xs uppercase tracking-widest ${allianceDisplay.colorClass}`}>{allianceDisplay.label}</p>
+                    <p className="text-[var(--color-ivory-antique)] font-serif">{motif}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 justify-center max-w-3xl mx-auto">
           {activePlayers.map(p => {
             const isSelected = selectedVote === p.id || myVote === p.id;
