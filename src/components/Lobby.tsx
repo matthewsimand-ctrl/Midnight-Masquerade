@@ -41,6 +41,7 @@ export function Lobby() {
   const { gameState, updatePlayer, addBot, advancePhase, kickPlayer, setGameMode } =
     useGameStore();
   const [showRules, setShowRules] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
 
   if (!gameState) return null;
 
@@ -75,11 +76,33 @@ export function Lobby() {
 
   const splitText = playerCount < minPlayers ? "TBD" : `${majSize}v${minSize}`;
 
+  const copyRoomCode = async () => {
+    try {
+      await navigator.clipboard.writeText(gameState.roomId);
+      setCopyStatus("copied");
+    } catch {
+      setCopyStatus("failed");
+    }
+
+    window.setTimeout(() => {
+      setCopyStatus("idle");
+    }, 1800);
+  };
+
   return (
     <div className="flex-1 flex items-center justify-center p-8 relative overflow-hidden">
       <div className="velvet-texture"></div>
 
       <div className="z-10 w-full max-w-[1000px] grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="lg:col-span-12 flex items-center justify-center">
+          <div className="bg-[var(--color-ballroom)] border border-[var(--color-gold)]/30 rounded-full px-6 py-2 text-[var(--color-ivory)]">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-ash)] mr-3">
+              Room Code
+            </span>
+            <span className="font-mono tracking-[0.25em] text-sm">{gameState.roomId}</span>
+          </div>
+        </div>
+
         {/* Left Column - Player List */}
         <div className="lg:col-span-7 flex flex-col">
           <div className="flex items-center justify-between mb-6">
@@ -168,15 +191,17 @@ export function Lobby() {
               </p>
             </div>
             <button
-              onClick={() => {
-                navigator.clipboard.writeText(gameState.roomId);
-              }}
+              onClick={copyRoomCode}
               className="w-10 h-10 rounded-full bg-[var(--color-velvet)] border border-[var(--color-charcoal-rich)] flex items-center justify-center text-[var(--color-gold)] hover:bg-[var(--color-charcoal-warm)] transition-colors"
-              title="Copy Room Code"
+              title={copyStatus === "copied" ? "Room Code Copied" : "Copy Room Code"}
             >
-              <Copy size={16} />
+              {copyStatus === "copied" ? <Check size={16} /> : <Copy size={16} />}
             </button>
           </div>
+          <p className="mt-2 text-xs text-[var(--color-ash)] min-h-5">
+            {copyStatus === "copied" && "Room code copied to clipboard."}
+            {copyStatus === "failed" && "Unable to copy room code. Please copy it manually."}
+          </p>
         </div>
 
         {/* Right Column - Room Controls */}
