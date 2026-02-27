@@ -53,6 +53,7 @@ export interface GameState {
   forcedEliminationChooserId?: string | null;
   forcedEliminationCandidates?: string[];
   coWinners?: string[];
+  usedMotifs?: string[];
 }
 
 export interface ClientPlayer {
@@ -89,4 +90,5 @@ export interface ClientGameState {
   forcedEliminationChooserId?: string | null;
   forcedEliminationCandidates?: string[];
   coWinners?: string[];
+  revealedAllianceMotifs?: Record<string, string>;
 }

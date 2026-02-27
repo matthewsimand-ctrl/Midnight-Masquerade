@@ -59,6 +59,27 @@ function getAvailableAvatar(game: GameState): string {
   return available.length > 0 ? available[0] : "🎭";
 }
 
+function assignNewAllianceMotifs(game: GameState) {
+  const usedMotifs = new Set(game.usedMotifs || []);
+  const availableMotifs = MOTIFS.filter((motif) => !usedMotifs.has(motif.text));
+
+  if (availableMotifs.length < 2) {
+    game.usedMotifs = [];
+    availableMotifs.push(...MOTIFS);
+  }
+
+  const shuffledMotifs = [...availableMotifs].sort(() => Math.random() - 0.5);
+  game.allianceMotifs["Majority"] = shuffledMotifs[0].text;
+  game.allianceKeywords["Majority"] = shuffledMotifs[0].keywords;
+  game.allianceMotifs["Minority"] = shuffledMotifs[1].text;
+  game.allianceKeywords["Minority"] = shuffledMotifs[1].keywords;
+  game.usedMotifs = [
+    ...(game.usedMotifs || []),
+    shuffledMotifs[0].text,
+    shuffledMotifs[1].text,
+  ];
+}
+
 export function setupGameSocket(io: Server) {
   io.on("connection", (socket: Socket) => {
     console.log("Client connected:", socket.id);
@@ -90,6 +111,7 @@ export function setupGameSocket(io: Server) {
           forcedEliminationCandidates: [],
           coWinners: [],
           consecutiveMajorityEliminations: 0,
+          usedMotifs: [],
         };
       }
 
@@ -227,6 +249,7 @@ export function setupGameSocket(io: Server) {
         game.sharedCards = {};
         game.votes = {};
         game.consecutiveMajorityEliminations = 0;
+        game.usedMotifs = [];
         game.forcedEliminationChooserId = null;
         game.forcedEliminationCandidates = [];
         game.coWinners = [];
@@ -289,6 +312,7 @@ function broadcastState(io: Server, roomId: string) {
       forcedEliminationChooserId: game.forcedEliminationChooserId,
       forcedEliminationCandidates: game.forcedEliminationCandidates,
       coWinners: game.coWinners,
+      revealedAllianceMotifs: game.eliminatedThisRound ? game.allianceMotifs : undefined,
       players: {},
     };
 
@@ -378,6 +402,7 @@ function advancePhase(io: Server, roomId: string) {
         } else {
           game.round++;
           game.eliminatedThisRound = null;
+          assignNewAllianceMotifs(game);
           game.phase = "MotifReveal";
         }
         broadcastState(io, roomId);
@@ -431,11 +456,8 @@ function startGame(io: Server, roomId: string) {
     game.players[pid].hand = [...images, ...words].map(c => ({...c, id: uuidv4()}));
   }
 
-  const shuffledMotifs = [...MOTIFS].sort(() => Math.random() - 0.5);
-  game.allianceMotifs["Majority"] = shuffledMotifs[0].text;
-  game.allianceKeywords["Majority"] = shuffledMotifs[0].keywords;
-  game.allianceMotifs["Minority"] = shuffledMotifs[1].text;
-  game.allianceKeywords["Minority"] = shuffledMotifs[1].keywords;
+  game.usedMotifs = [];
+  assignNewAllianceMotifs(game);
 
   game.phase = "RoleReveal";
   broadcastState(io, roomId);
