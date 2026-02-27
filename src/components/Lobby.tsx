@@ -1,5 +1,7 @@
 import { useGameStore } from "../client/store.js";
 import { Check, Copy, Crown, UserPlus } from "lucide-react";
+import { useState } from "react";
+import { RulesModal } from "./RulesModal.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CUSTOM MASKS
@@ -27,8 +29,9 @@ const EMOJI_AVATARS = ["🎭", "🦊", "🦉", "🦇", "🐺", "🐍", "🦋", "
 const AVATARS = [...CUSTOM_MASK_IMAGES, ...EMOJI_AVATARS];
 
 export function Lobby() {
-  const { gameState, updatePlayer, addBot, advancePhase, kickPlayer } =
+  const { gameState, updatePlayer, addBot, advancePhase, kickPlayer, setGameMode } =
     useGameStore();
+  const [showRules, setShowRules] = useState(false);
 
   if (!gameState) return null;
 
@@ -44,12 +47,22 @@ export function Lobby() {
   let majSize: number | string = 3;
   let minSize: number | string = 1;
 
-  if (playerCount === 5) { majSize = 3; minSize = 2; }
-  else if (playerCount === 6) { majSize = 4; minSize = 2; }
-  else if (playerCount === 7) { majSize = 4; minSize = 3; }
-  else if (playerCount === 8) { majSize = 5; minSize = 3; }
-  else if (playerCount === 9) { majSize = "5-6"; minSize = "3-4"; }
-  else if (playerCount >= 10) { majSize = 6; minSize = 4; }
+  if (gameState.gameMode === "BattleRoyale") {
+    if (playerCount % 2 === 0) {
+      majSize = Math.max(playerCount / 2 + 1, 0);
+      minSize = Math.max(playerCount / 2 - 1, 0);
+    } else {
+      majSize = Math.ceil(playerCount / 2);
+      minSize = Math.floor(playerCount / 2);
+    }
+  } else {
+    if (playerCount === 5) { majSize = 3; minSize = 2; }
+    else if (playerCount === 6) { majSize = 4; minSize = 2; }
+    else if (playerCount === 7) { majSize = 4; minSize = 3; }
+    else if (playerCount === 8) { majSize = 5; minSize = 3; }
+    else if (playerCount === 9) { majSize = "5-6"; minSize = "3-4"; }
+    else if (playerCount >= 10) { majSize = 6; minSize = 4; }
+  }
 
   const splitText = playerCount < minPlayers ? "TBD" : `${majSize}v${minSize}`;
 
@@ -160,9 +173,34 @@ export function Lobby() {
         {/* Right Column - Room Controls */}
         <div className="lg:col-span-5 flex flex-col">
           <div className="bg-[var(--color-ballroom)] border border-[var(--color-charcoal-warm)] rounded-xl p-8 flex flex-col h-full">
-            <h3 className="text-xl font-serif text-[var(--color-ivory)] mb-6 border-b border-[var(--color-charcoal-warm)] pb-4">
-              The Masquerade
-            </h3>
+            <div className="flex items-center justify-between mb-6 border-b border-[var(--color-charcoal-warm)] pb-4">
+              <h3 className="text-xl font-serif text-[var(--color-ivory)]">The Masquerade</h3>
+              <button
+                onClick={() => setShowRules(true)}
+                className="w-8 h-8 rounded-full border border-[var(--color-gold)]/50 text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 transition-colors"
+                title="Game Rules"
+              >
+                ?
+              </button>
+            </div>
+
+            <div className="mb-5 space-y-2">
+              <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)]">Game Mode</p>
+              <ModeOption
+                active={gameState.gameMode === "BattleRoyale"}
+                title="Battle Royale"
+                description="Survivors can swap alliances each round. Last two alive win together."
+                onClick={() => isHost && setGameMode("BattleRoyale")}
+                disabled={!isHost}
+              />
+              <ModeOption
+                active={gameState.gameMode === "LionsVsSnakes"}
+                title="Lions vs. Snakes"
+                description="Classic mode with fixed alliances and original win conditions."
+                onClick={() => isHost && setGameMode("LionsVsSnakes")}
+                disabled={!isHost}
+              />
+            </div>
 
             <div className="space-y-4 mb-auto">
               <div className="flex justify-between items-center text-sm">
@@ -315,6 +353,49 @@ export function Lobby() {
           </div>
         </div>
       </div>
+
+      <RulesModal
+        isOpen={showRules}
+        onClose={() => setShowRules(false)}
+        selectedMode={gameState.gameMode}
+      />
     </div>
+  );
+}
+
+function ModeOption({
+  active,
+  title,
+  description,
+  onClick,
+  disabled,
+}: {
+  active: boolean;
+  title: string;
+  description: string;
+  onClick: () => void;
+  disabled: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`w-full text-left rounded-lg border p-3 transition-colors ${
+        active
+          ? "border-[var(--color-gold)]/60 bg-[var(--color-gold)]/10"
+          : "border-[var(--color-charcoal-warm)] bg-[var(--color-velvet)]/40 hover:border-[var(--color-gold)]/30"
+      } ${disabled ? "cursor-not-allowed" : ""}`}
+    >
+      <div className="flex items-center gap-2">
+        <p className="font-serif text-[var(--color-ivory)]">{title}</p>
+        <span className="group relative inline-flex items-center justify-center w-4 h-4 rounded-full border border-[var(--color-ash)] text-[10px] text-[var(--color-ash)]">
+          i
+          <span className="absolute left-1/2 top-5 z-20 hidden w-56 -translate-x-1/2 rounded border border-[var(--color-charcoal-warm)] bg-[var(--color-midnight)] px-2 py-1 text-[10px] text-[var(--color-ivory-antique)] group-hover:block">
+            {description}
+          </span>
+        </span>
+      </div>
+      <p className="text-xs text-[var(--color-ash)] mt-1">{description}</p>
+    </button>
   );
 }

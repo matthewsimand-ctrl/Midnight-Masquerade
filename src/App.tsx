@@ -10,6 +10,7 @@ import { EliminationVote } from "./components/EliminationVote.js";
 import { GameOver } from "./components/GameOver.js";
 import { Journal } from "./components/Journal.js";
 import { GameHeader } from "./components/GameHeader.js";
+import { RulesModal } from "./components/RulesModal.js";
 
 // ─── Room code generation ──────────────────────────────────────────────────
 // Uses a timestamp-seeded suffix to prevent collisions when multiple rooms
@@ -28,6 +29,7 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
   const [name, setName] = useState("");
   const [roomId, setRoomId] = useState("");
   const [mode, setMode] = useState<"home" | "create" | "join">("home");
+  const [showRules, setShowRules] = useState(false);
 
   return (
     <div className="min-h-screen bg-[var(--color-midnight)] text-[var(--color-ivory)] flex flex-col items-center justify-center font-sans relative overflow-hidden">
@@ -37,6 +39,13 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
         style={{ backgroundImage: "url(/homescreen.jpg)" }}
       ></div>
       <div className="absolute inset-0 z-0 bg-gradient-to-b from-[var(--color-midnight)]/50 via-[var(--color-midnight)]/70 to-[var(--color-midnight)]"></div>
+      <button
+        onClick={() => setShowRules(true)}
+        className="absolute top-6 right-6 z-20 w-10 h-10 rounded-full border border-[var(--color-gold)]/60 bg-[var(--color-ballroom)]/70 text-[var(--color-gold)] font-bold text-xl hover:bg-[var(--color-gold)]/10 transition-colors"
+        title="Game Rules"
+      >
+        ?
+      </button>
 
       <div className="velvet-texture z-0"></div>
 
@@ -171,6 +180,12 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
       <div className="absolute bottom-4 text-[var(--color-ash)] text-xs tracking-widest">
         v1.0.0 • ANTHROPIC
       </div>
+
+      <RulesModal
+        isOpen={showRules}
+        onClose={() => setShowRules(false)}
+        selectedMode="BattleRoyale"
+      />
     </div>
   );
 }
