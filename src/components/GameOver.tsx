@@ -19,7 +19,7 @@ function resolveAvatarSrc(avatar?: string) {
 }
 
 export function GameOver() {
-  const { gameState } = useGameStore();
+  const { gameState, endGame } = useGameStore();
   if (!gameState) return null;
 
   const isMajorityWin = gameState.winner === "Majority";
@@ -156,7 +156,7 @@ export function GameOver() {
 
         <div className="flex justify-center gap-6">
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => endGame()}
             className="px-8 py-4 rounded bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] font-serif font-bold uppercase tracking-widest shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-105 transition-transform"
           >
             Return to the Ball
