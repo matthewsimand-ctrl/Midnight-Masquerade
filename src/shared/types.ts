@@ -54,9 +54,6 @@ export interface GameState {
   forcedEliminationCandidates?: string[];
   coWinners?: string[];
   usedMotifs?: string[];
-  tiebreakerStage?: "None" | "Revote" | "AllianceGuess";
-  tiebreakerTiedPlayerIds?: string[];
-  allianceGuesses?: Record<string, Alliance>;
 }
 
 export interface ClientPlayer {
@@ -94,7 +91,4 @@ export interface ClientGameState {
   forcedEliminationCandidates?: string[];
   coWinners?: string[];
   revealedAllianceMotifs?: Record<string, string>;
-  tiebreakerStage?: "None" | "Revote" | "AllianceGuess";
-  tiebreakerTiedPlayerIds?: string[];
-  allianceGuesses?: Record<string, Alliance>;
 }

@@ -28,7 +28,7 @@ const getAvatarLabel = (avatar?: string) => {
 const ALLIANCE_MOTIF_ORDER = ["Majority", "Minority"] as const;
 
 export function EliminationVote() {
-  const { gameState, vote, advancePhase, chooseForcedElimination, submitAllianceGuess } = useGameStore();
+  const { gameState, vote, advancePhase, chooseForcedElimination } = useGameStore();
   const [selectedVote, setSelectedVote] = useState<string | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
   
@@ -45,16 +45,9 @@ export function EliminationVote() {
   const me = Object.values(gameState.players).find(p => p.isMe);
   const activePlayers = Object.values(gameState.players).filter(p => !p.isEliminated);
   const isHost = me?.isHost;
-  const tiedPlayerIds = gameState.tiebreakerTiedPlayerIds || [];
-  const isRevote = gameState.tiebreakerStage === "Revote";
-  const isAllianceGuess = gameState.tiebreakerStage === "AllianceGuess";
-  const myGuess = me ? gameState.allianceGuesses?.[me.id] : undefined;
   
   const myVote = me ? gameState.votes[me.id] : null;
-  const eligibleVoters = isRevote ? activePlayers.filter((player) => !tiedPlayerIds.includes(player.id)) : activePlayers;
-  const allVotesLocked = isAllianceGuess
-    ? activePlayers.every((player) => Boolean(gameState.allianceGuesses?.[player.id]))
-    : eligibleVoters.every((player) => Boolean(gameState.votes[player.id]));
+  const allVotesLocked = activePlayers.every((player) => Boolean(gameState.votes[player.id]));
   const isForcedChooser = me && gameState.forcedEliminationChooserId === me.id;
 
   if (isForcedChooser && gameState.forcedEliminationCandidates && gameState.forcedEliminationCandidates.length > 0) {
@@ -111,30 +104,6 @@ export function EliminationVote() {
       <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)]">
         <h2 className="text-2xl font-serif text-[var(--color-gold)] mb-2">Battle Royale Twist</h2>
         <p className="text-[var(--color-ivory-antique)]">{chooser?.name || "A player"} was voted but survives and is selecting another Majority player to eliminate.</p>
-      </div>
-    );
-  }
-
-  if (isAllianceGuess) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
-        <div className="velvet-texture"></div>
-        <div className="z-10 text-center max-w-3xl w-full">
-          <h2 className="text-3xl text-[var(--color-gold)] font-serif mb-4 uppercase tracking-widest">Final Tiebreaker</h2>
-          <p className="text-[var(--color-ivory-antique)] mb-8">Everyone must guess their own alliance for this round.</p>
-          {!myGuess && !me?.isEliminated && (
-            <div className="flex items-center justify-center gap-4">
-              <button onClick={() => submitAllianceGuess("Majority")} className="px-6 py-3 rounded border border-[var(--color-gold)] text-[var(--color-gold)]">I am a Lion</button>
-              <button onClick={() => submitAllianceGuess("Minority")} className="px-6 py-3 rounded border border-[rgba(42,160,160,0.9)] text-[rgba(42,160,160,0.9)]">I am a Serpent</button>
-            </div>
-          )}
-          {myGuess && <p className="text-[var(--color-ash)] italic">Your guess is locked in.</p>}
-          {isHost && allVotesLocked && (
-            <button onClick={() => advancePhase()} className="mt-10 px-8 py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest">
-              Resolve Final Tiebreaker
-            </button>
-          )}
-        </div>
       </div>
     );
   }
@@ -287,7 +256,7 @@ export function EliminationVote() {
       
       <div className="text-center max-w-4xl w-full z-10">
         <h2 className="text-3xl text-[var(--color-ivory)] font-serif mb-2 uppercase tracking-widest animate-in slide-in-from-top-8">Choose Who to Unmask</h2>
-        <p className="text-[var(--color-ash)] mb-8 italic font-serif">{isRevote ? "Tied vote: only non-tied players may vote, and only tied players can be chosen." : "Cast your vote. Someone must leave the ball."}</p>
+        <p className="text-[var(--color-ash)] mb-8 italic font-serif">Cast your vote. Someone must leave the ball.</p>
         
         {gameState.revealedAllianceMotifs && (
           <div className="mb-8 rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-ballroom)]/80 p-5 text-left max-w-2xl mx-auto">
@@ -310,26 +279,19 @@ export function EliminationVote() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 justify-center max-w-3xl mx-auto">
           {activePlayers.map(p => {
-            const isTiedPlayer = tiedPlayerIds.includes(p.id);
-            const canTarget = !isRevote || isTiedPlayer;
-            const voterBlocked = isRevote && me ? tiedPlayerIds.includes(me.id) : false;
-            const isDisabled = !canTarget || voterBlocked || Boolean(myVote);
             const isSelected = selectedVote === p.id || myVote === p.id;
             const isOtherSelected = (selectedVote || myVote) && !isSelected;
             
             return (
               <button
                 key={p.id}
-                onClick={() => !isDisabled && setSelectedVote(p.id)}
-                disabled={isDisabled}
+                onClick={() => setSelectedVote(p.id)}
                 className={`p-6 rounded-lg border transition-all flex flex-col items-center ${
                   isSelected 
                     ? 'bg-[var(--color-velvet)] border-[var(--color-crimson)] shadow-[0_0_20px_rgba(156,28,43,0.4)] scale-105' 
                     : isOtherSelected
                       ? 'bg-[var(--color-ballroom)] border-[var(--color-charcoal-warm)] opacity-30 grayscale'
-                      : isDisabled
-                        ? 'bg-[var(--color-ballroom)] border-[var(--color-charcoal-warm)] opacity-40 cursor-not-allowed'
-                        : 'bg-[var(--color-velvet)] border-[var(--color-charcoal-rich)] hover:border-[var(--color-crimson)]/50 hover:shadow-[0_0_15px_rgba(156,28,43,0.2)]'
+                      : 'bg-[var(--color-velvet)] border-[var(--color-charcoal-rich)] hover:border-[var(--color-crimson)]/50 hover:shadow-[0_0_15px_rgba(156,28,43,0.2)]'
                 }`}
               >
                 <div className={`w-20 h-20 rounded-full bg-[var(--color-charcoal-rich)] mb-4 flex items-center justify-center text-3xl transition-all ${
