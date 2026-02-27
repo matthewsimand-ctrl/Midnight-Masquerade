@@ -172,7 +172,7 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
       </div>
 
       <div className="absolute bottom-4 text-[var(--color-ash)] text-xs tracking-widest">
-        v1.0.0 • ANTHROPIC
+        v1.0.0 • MATTY GAMES
       </div>
 
       <RulesModal

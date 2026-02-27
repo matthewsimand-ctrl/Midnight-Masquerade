@@ -653,7 +653,7 @@ function applyElimination(io: Server, roomId: string, eliminatedId: string) {
   if (game.gameMode === "LionsVsSnakes") {
     if (numMinority === 0) {
       game.winner = "Majority";
-    } else if (game.consecutiveMajorityEliminations >= 2) {
+    } else if (game.consecutiveMajorityEliminations >= 2 || numMajority <= numMinority) {
       game.winner = "Minority";
     }
   }
