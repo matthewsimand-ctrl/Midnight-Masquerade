@@ -99,10 +99,10 @@ export function Lobby() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center p-8 relative overflow-hidden">
+    <div className="flex-1 flex items-start justify-center p-6 relative overflow-y-auto">
       <div className="velvet-texture"></div>
 
-      <div className="z-10 w-full max-w-[1000px] grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <div className="z-10 w-full max-w-[1100px] grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-12 flex items-center justify-center">
           <div className="bg-[var(--color-ballroom)] border border-[var(--color-gold)]/30 rounded-full px-4 py-2 text-[var(--color-ivory)] flex items-center gap-3">
             <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-ash)]">
@@ -204,20 +204,20 @@ export function Lobby() {
         </div>
 
         {/* Right Column - Room Controls */}
-        <div className="lg:col-span-5 flex flex-col">
-          <div className="bg-[var(--color-ballroom)] border border-[var(--color-charcoal-warm)] rounded-xl p-8 flex flex-col h-full">
-            <div className="flex items-center justify-between mb-6 border-b border-[var(--color-charcoal-warm)] pb-4">
-              <h3 className="text-xl font-serif text-[var(--color-ivory)]">The Masquerade</h3>
+        <div className="lg:col-span-5 flex flex-col gap-4">
+          <div className="bg-[var(--color-ballroom)] border border-[var(--color-charcoal-warm)] rounded-xl p-5">
+            <div className="flex items-center justify-between mb-4 border-b border-[var(--color-charcoal-warm)] pb-3">
+              <h3 className="text-lg font-serif text-[var(--color-ivory)]">Lobby Settings</h3>
               <button
                 onClick={() => setShowRules(true)}
-                className="w-8 h-8 rounded-full border border-[var(--color-gold)]/50 text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 transition-colors"
+                className="h-8 px-3 rounded-full border border-[var(--color-gold)]/50 text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10 transition-colors text-xs uppercase tracking-widest"
                 title="Game Rules"
               >
-                ?
+                Rules
               </button>
             </div>
 
-            <div className="mb-5 space-y-2">
+            <div className="mb-4 space-y-2">
               <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)]">Game Mode</p>
               <ModeOption
                 active={gameState.gameMode === "BattleRoyale"}
@@ -235,7 +235,7 @@ export function Lobby() {
               />
             </div>
 
-            <div className="mb-5 space-y-3">
+            <div className="mb-4 space-y-3">
               <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)]">Motif Reveal Settings</p>
 
               <SettingToggle
@@ -255,7 +255,7 @@ export function Lobby() {
               />
             </div>
 
-            <div className="space-y-4 mb-auto">
+            <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-[var(--color-ash)]">Alliance Split</span>
                 <span className="text-[var(--color-gold)] font-bold">
@@ -275,60 +275,22 @@ export function Lobby() {
                 </span>
               </div>
             </div>
+          </div>
 
-            <div className="mt-12 space-y-4">
-              {me && (
-                <div className="mb-6">
-                  <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)] mb-3">
-                    Choose Your Mask
+          {me && (
+            <div className="bg-[var(--color-ballroom)] border border-[var(--color-charcoal-warm)] rounded-xl p-5">
+              <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)] mb-3">
+                Choose Your Mask
+              </p>
+
+              {/* Custom image masks section (only shown if any exist) */}
+              {CUSTOM_MASK_IMAGES.length > 0 && (
+                <>
+                  <p className="text-[9px] uppercase tracking-widest text-[var(--color-gold)]/50 mb-2">
+                    Custom Masks
                   </p>
-
-                  {/* Custom image masks section (only shown if any exist) */}
-                  {CUSTOM_MASK_IMAGES.length > 0 && (
-                    <>
-                      <p className="text-[9px] uppercase tracking-widest text-[var(--color-gold)]/50 mb-2">
-                        Custom Masks
-                      </p>
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {CUSTOM_MASK_IMAGES.map((avatar) => {
-                          const isTaken = players.some(
-                            (p) => p.id !== me.id && p.avatar === avatar
-                          );
-                          return (
-                            <button
-                              key={avatar}
-                              onClick={() => {
-                                if (!me.ready && !isTaken)
-                                  updatePlayer(me.name, avatar, me.ready);
-                              }}
-                              disabled={me.ready || isTaken}
-                              title={avatar.split("/").pop()?.replace(/\.\w+$/, "")}
-                              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all overflow-hidden ${
-                                me.avatar === avatar
-                                  ? "border-2 border-[var(--color-gold)] shadow-[0_0_10px_rgba(212,175,55,0.4)]"
-                                  : "border border-[var(--color-charcoal-warm)] hover:border-[var(--color-gold)]/50"
-                              } ${me.ready ? "opacity-50 cursor-not-allowed" : ""} ${
-                                isTaken ? "opacity-20 cursor-not-allowed grayscale" : ""
-                              }`}
-                            >
-                              <img
-                                src={avatar}
-                                alt="Mask"
-                                className="w-full h-full object-cover"
-                              />
-                            </button>
-                          );
-                        })}
-                      </div>
-                      <p className="text-[9px] uppercase tracking-widest text-[var(--color-gold)]/50 mb-2">
-                        Emoji Masks
-                      </p>
-                    </>
-                  )}
-
-                  {/* Emoji masks */}
-                  <div className="flex flex-wrap gap-2">
-                    {EMOJI_AVATARS.map((avatar) => {
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {CUSTOM_MASK_IMAGES.map((avatar) => {
                       const isTaken = players.some(
                         (p) => p.id !== me.id && p.avatar === avatar
                       );
@@ -340,79 +302,118 @@ export function Lobby() {
                               updatePlayer(me.name, avatar, me.ready);
                           }}
                           disabled={me.ready || isTaken}
-                          className={`w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all ${
+                          title={avatar.split("/").pop()?.replace(/\.\w+$/, "")}
+                          className={`w-12 h-12 rounded-full flex items-center justify-center transition-all overflow-hidden ${
                             me.avatar === avatar
-                              ? "bg-[var(--color-charcoal-rich)] border-2 border-[var(--color-gold)] shadow-[0_0_10px_rgba(212,175,55,0.3)]"
-                              : "bg-[var(--color-velvet)] border border-[var(--color-charcoal-warm)] hover:border-[var(--color-gold)]/50"
+                              ? "border-2 border-[var(--color-gold)] shadow-[0_0_10px_rgba(212,175,55,0.4)]"
+                              : "border border-[var(--color-charcoal-warm)] hover:border-[var(--color-gold)]/50"
                           } ${me.ready ? "opacity-50 cursor-not-allowed" : ""} ${
                             isTaken ? "opacity-20 cursor-not-allowed grayscale" : ""
                           }`}
                         >
-                          {avatar}
+                          <img
+                            src={avatar}
+                            alt="Mask"
+                            className="w-full h-full object-cover"
+                          />
                         </button>
                       );
                     })}
                   </div>
-                </div>
-              )}
-
-              {me && (
-                <>
-                  <button
-                    onClick={() => updatePlayer(me.name, me.avatar, !me.ready)}
-                    className={`w-full py-4 rounded font-serif font-bold tracking-widest uppercase transition-all ${
-                      me.ready
-                        ? "bg-transparent border border-[var(--color-gold)]/50 text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10"
-                        : "bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-[1.02]"
-                    }`}
-                  >
-                    {me.ready ? "Cancel Ready" : "Ready to Dance"}
-                  </button>
-
-                  <button
-                    onClick={() => leaveRoom()}
-                    className="w-full py-3 rounded bg-transparent border border-[var(--color-crimson)]/50 text-[var(--color-crimson)] hover:bg-[var(--color-crimson)]/10 transition-colors flex items-center justify-center gap-2 font-serif uppercase tracking-widest text-xs"
-                  >
-                    <LogOut size={14} />
-                    Leave Lobby
-                  </button>
+                  <p className="text-[9px] uppercase tracking-widest text-[var(--color-gold)]/50 mb-2">
+                    Emoji Masks
+                  </p>
                 </>
               )}
 
-              {isHost && (
-                <>
-                  <button
-                    onClick={() => addBot()}
-                    disabled={players.length >= maxPlayers}
-                    className="w-full py-3 rounded bg-[var(--color-velvet)] border border-[var(--color-charcoal-rich)] text-[var(--color-ivory-antique)] font-serif text-sm tracking-widest uppercase hover:bg-[var(--color-charcoal-warm)] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <UserPlus size={16} />
-                    Add Bot Guest
-                  </button>
-
-                  <div className="pt-6 mt-6 border-t border-[var(--color-charcoal-warm)]">
+              {/* Emoji masks */}
+              <div className="flex flex-wrap gap-2">
+                {EMOJI_AVATARS.map((avatar) => {
+                  const isTaken = players.some(
+                    (p) => p.id !== me.id && p.avatar === avatar
+                  );
+                  return (
                     <button
-                      onClick={() => advancePhase()}
-                      disabled={!canStart}
-                      className={`w-full py-4 rounded font-serif font-bold tracking-widest uppercase transition-all ${
-                        canStart
-                          ? "bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-[1.02]"
-                          : "bg-[var(--color-velvet)] text-[var(--color-ash)] cursor-not-allowed"
+                      key={avatar}
+                      onClick={() => {
+                        if (!me.ready && !isTaken)
+                          updatePlayer(me.name, avatar, me.ready);
+                      }}
+                      disabled={me.ready || isTaken}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all ${
+                        me.avatar === avatar
+                          ? "bg-[var(--color-charcoal-rich)] border-2 border-[var(--color-gold)] shadow-[0_0_10px_rgba(212,175,55,0.3)]"
+                          : "bg-[var(--color-velvet)] border border-[var(--color-charcoal-warm)] hover:border-[var(--color-gold)]/50"
+                      } ${me.ready ? "opacity-50 cursor-not-allowed" : ""} ${
+                        isTaken ? "opacity-20 cursor-not-allowed grayscale" : ""
                       }`}
                     >
-                      Start the Masquerade
+                      {avatar}
                     </button>
-                    {!canStart && (
-                      <p className="text-center text-[11px] text-[var(--color-ash)] mt-3">
-                        {players.length < minPlayers
-                          ? `Requires at least ${minPlayers} guests`
-                          : "Waiting for all guests to be ready"}
-                      </p>
-                    )}
-                  </div>
-                </>
-              )}
+                  );
+                })}
+              </div>
             </div>
+          )}
+
+          <div className="bg-[var(--color-ballroom)] border border-[var(--color-charcoal-warm)] rounded-xl p-5 space-y-3">
+            <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)] mb-1">Lobby Actions</p>
+            {me && (
+              <>
+                <button
+                  onClick={() => updatePlayer(me.name, me.avatar, !me.ready)}
+                  className={`w-full py-4 rounded font-serif font-bold tracking-widest uppercase transition-all ${
+                    me.ready
+                      ? "bg-transparent border border-[var(--color-gold)]/50 text-[var(--color-gold)] hover:bg-[var(--color-gold)]/10"
+                      : "bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-[1.02]"
+                  }`}
+                >
+                  {me.ready ? "Cancel Ready" : "Ready to Dance"}
+                </button>
+
+                <button
+                  onClick={() => leaveRoom()}
+                  className="w-full py-3 rounded bg-transparent border border-[var(--color-crimson)]/50 text-[var(--color-crimson)] hover:bg-[var(--color-crimson)]/10 transition-colors flex items-center justify-center gap-2 font-serif uppercase tracking-widest text-xs"
+                >
+                  <LogOut size={14} />
+                  Leave Lobby
+                </button>
+              </>
+            )}
+
+            {isHost && (
+              <>
+                <button
+                  onClick={() => addBot()}
+                  disabled={players.length >= maxPlayers}
+                  className="w-full py-3 rounded bg-[var(--color-velvet)] border border-[var(--color-charcoal-rich)] text-[var(--color-ivory-antique)] font-serif text-sm tracking-widest uppercase hover:bg-[var(--color-charcoal-warm)] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <UserPlus size={16} />
+                  Add Bot Guest
+                </button>
+
+                <div className="pt-4 mt-2 border-t border-[var(--color-charcoal-warm)]">
+                  <button
+                    onClick={() => advancePhase()}
+                    disabled={!canStart}
+                    className={`w-full py-4 rounded font-serif font-bold tracking-widest uppercase transition-all ${
+                      canStart
+                        ? "bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-[1.02]"
+                        : "bg-[var(--color-velvet)] text-[var(--color-ash)] cursor-not-allowed"
+                    }`}
+                  >
+                    Start the Masquerade
+                  </button>
+                  {!canStart && (
+                    <p className="text-center text-[11px] text-[var(--color-ash)] mt-3">
+                      {players.length < minPlayers
+                        ? `Requires at least ${minPlayers} guests`
+                        : "Waiting for all guests to be ready"}
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
