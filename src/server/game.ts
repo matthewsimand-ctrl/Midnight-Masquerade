@@ -528,12 +528,22 @@ function resolveVote(io: Server, roomId: string) {
       return;
     }
 
+    // In Battle Royale, a voted Lion is still eliminated, but gets a final
+    // retaliation choice before the next round begins.
+    votedPlayer.isEliminated = true;
+
     const activeMajorityIds = Object.values(game.players)
       .filter((p) => !p.isEliminated && p.alliance === "Majority" && p.id !== eliminatedId)
       .map((p) => p.id);
 
+    game.eliminatedThisRound = eliminatedId;
     game.forcedEliminationChooserId = eliminatedId;
     game.forcedEliminationCandidates = activeMajorityIds;
+
+    if (activeMajorityIds.length === 0) {
+      applyElimination(io, roomId, eliminatedId);
+      return;
+    }
 
     if (game.players[eliminatedId].isBot && activeMajorityIds.length > 0) {
       const selectedTarget = activeMajorityIds[Math.floor(Math.random() * activeMajorityIds.length)];
@@ -550,7 +560,7 @@ function resolveVote(io: Server, roomId: string) {
 
 function applyElimination(io: Server, roomId: string, eliminatedId: string) {
   const game = rooms[roomId];
-  if (!game || game.players[eliminatedId].isEliminated) return;
+  if (!game || (game.players[eliminatedId].isEliminated && game.eliminatedThisRound !== eliminatedId)) return;
 
   game.eliminatedThisRound = eliminatedId;
   const eliminatedPlayer = game.players[eliminatedId];
