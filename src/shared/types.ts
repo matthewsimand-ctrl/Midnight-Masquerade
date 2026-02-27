@@ -1,4 +1,5 @@
 export type Alliance = "Majority" | "Minority";
+export type GameMode = "BattleRoyale" | "LionsVsSnakes";
 export type CardType = "Image" | "Word";
 
 export interface Card {
@@ -37,6 +38,7 @@ export interface GameState {
   maxRounds: number;
   allianceMotifs: Record<string, string>;
   allianceKeywords: Record<string, string[]>;
+  currentMotif?: string | null;
   minorityPenaltyRound: boolean;
   dancePairs: Record<string, string>;
   danceRequests: Record<string, string>;
@@ -46,6 +48,11 @@ export interface GameState {
   winner: Alliance | null;
   remainingMajority: number;
   remainingMinority: number;
+  consecutiveMajorityEliminations?: number;
+  gameMode: GameMode;
+  forcedEliminationChooserId?: string | null;
+  forcedEliminationCandidates?: string[];
+  coWinners?: string[];
 }
 
 export interface ClientPlayer {
@@ -78,6 +85,8 @@ export interface ClientGameState {
   remainingMajority: number;
   remainingMinority: number;
   allPairsShared?: boolean;
+  gameMode: GameMode;
+  forcedEliminationChooserId?: string | null;
+  forcedEliminationCandidates?: string[];
+  coWinners?: string[];
 }
-
-

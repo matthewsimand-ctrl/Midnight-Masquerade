@@ -14,6 +14,8 @@ interface GameStore {
   vote: (targetId: string) => void;
   kickPlayer: (playerId: string) => void;
   endGame: () => void;
+  setGameMode: (gameMode: "BattleRoyale" | "LionsVsSnakes") => void;
+  chooseForcedElimination: (targetId: string) => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -91,6 +93,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
       socket.emit("endGame", { roomId: gameState.roomId });
     }
   },
+  setGameMode: (gameMode) => {
+    const { socket, gameState } = get();
+    if (socket && gameState) {
+      socket.emit("setGameMode", { roomId: gameState.roomId, gameMode });
+    }
+  },
+  chooseForcedElimination: (targetId) => {
+    const { socket, gameState } = get();
+    if (socket && gameState) {
+      socket.emit("chooseForcedElimination", { roomId: gameState.roomId, targetId });
+    }
+  },
 }));
-
 
