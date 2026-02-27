@@ -4,7 +4,7 @@ const RULES_BY_MODE: Record<GameMode, { title: string; bullets: string[] }> = {
   BattleRoyale: {
     title: "Battle Royale (Default)",
     bullets: [
-      "You begin in hidden alliances, but alliances are reassigned among survivors after every round.",
+      "You begin in hidden alliances, but alliances are reassigned among the survivors after every round.",
       "Round flow stays the same: reveal your motif, dance, share one card, gossip, then vote.",
       "If the voted player is a Serpent (minority), they are eliminated immediately.",
       "If the voted player is Lion (majority), they survive and must choose another Majority player to eliminate.",
