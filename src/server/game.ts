@@ -505,8 +505,17 @@ function resolveVote(io: Server, roomId: string) {
   }
   
   const voteCounts: Record<string, number> = {};
+  const activePlayerIdSet = new Set(activePlayerIds);
   for (const voterId in game.votes) {
+    if (!activePlayerIdSet.has(voterId)) {
+      continue;
+    }
+
     const targetId = game.votes[voterId];
+    if (!activePlayerIdSet.has(targetId)) {
+      continue;
+    }
+
     voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
   }
 
