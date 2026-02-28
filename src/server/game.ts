@@ -36,6 +36,15 @@ const rooms: Record<string, GameState> = {};
 
 const AVATARS = ["🎭", "🦊", "🦉", "🦇", "🐺", "🐍", "🦋", "🕷️", "🦚", "🦢"];
 
+function generateRoomCode(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
+
 function drawReplacementCard(): Card {
   const sourcePool = Math.random() < 0.5 ? IMAGE_CARDS : WORD_CARDS;
   const randomCard = sourcePool[Math.floor(Math.random() * sourcePool.length)];
@@ -65,8 +74,6 @@ function getBattleRoyaleSplit(playerCount: number) {
     minority: Math.floor(playerCount / 2),
   };
 }
-
-
 
 function getTiedLeaders(voteCounts: Record<string, number>) {
   let maxVotes = 0;
@@ -113,25 +120,18 @@ export function setupGameSocket(io: Server) {
   io.on("connection", (socket: Socket) => {
     console.log("Client connected:", socket.id);
 
-  socket.on("joinRoom", ({ roomId, name, avatar, intent }) => {
-  const action = intent || "join";
-  let resolvedRoomId = roomId;
+    socket.on("joinRoom", ({ roomId, name, avatar, intent }: { roomId: string, name: string, avatar: string, intent?: "create" | "join" }) => {
+      const action = intent || "join";
+      let resolvedRoomId = roomId;
 
-  if (action === "create") {
-    // Generate a guaranteed-unique room code server-side
-    do {
-      resolvedRoomId = generateRoomCode(); // move generateRoomCode to server
-    } while (rooms[resolvedRoomId]);
-    // Now create the room with the unique code
-  } else {
-    // "join" — room must already exist
-    if (!rooms[resolvedRoomId]) {
-      socket.emit("error", "Room not found. Check the room code and try again.");
-      return;
-    }
-  }
-        rooms[roomId] = {
-          roomId,
+      if (action === "create") {
+        // Generate a guaranteed-unique room code server-side
+        do {
+          resolvedRoomId = generateRoomCode();
+        } while (rooms[resolvedRoomId]);
+
+        rooms[resolvedRoomId] = {
+          roomId: resolvedRoomId,
           hostId: socket.id,
           players: {},
           phase: "Lobby",
@@ -160,14 +160,18 @@ export function setupGameSocket(io: Server) {
           revealMotifDuringDiscussion: false,
           revealMotifDuringElimination: false,
         };
-      } else if (action === "create") {
-        socket.emit("error", "That room code is already in use. Please create a new room.");
-        return;
+      } else {
+        // "join" — room must already exist
+        if (!rooms[resolvedRoomId]) {
+          socket.emit("error", "Room not found. Check the room code and try again.");
+          return;
+        }
       }
 
-      socket.join(roomId);
+      socket.join(resolvedRoomId);
 
-      const game = rooms[roomId];
+      const game = rooms[resolvedRoomId];
+
       if (game.phase !== "Lobby" && !game.players[socket.id]) {
         socket.emit("error", "Game already in progress");
         return;
@@ -192,7 +196,7 @@ export function setupGameSocket(io: Server) {
         };
       }
 
-      broadcastState(io, roomId);
+      broadcastState(io, resolvedRoomId);
     });
 
     socket.on("addBot", ({ roomId }: { roomId: string }) => {
@@ -242,7 +246,6 @@ export function setupGameSocket(io: Server) {
         broadcastState(io, roomId);
       }
     });
-
 
     socket.on("setRevealMotifDuringDiscussion", ({ roomId, enabled }: { roomId: string, enabled: boolean }) => {
       const game = rooms[roomId];
@@ -870,15 +873,6 @@ function applyEliminations(io: Server, roomId: string, eliminatedIds: string[]) 
   broadcastState(io, roomId);
 }
 
-function generateRoomCode(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let code = "";
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return code;
-}
-
 function applyElimination(io: Server, roomId: string, eliminatedId: string) {
   const game = rooms[roomId];
   if (!game || (game.players[eliminatedId].isEliminated && game.eliminatedThisRound !== eliminatedId)) return;
@@ -921,9 +915,6 @@ function applyElimination(io: Server, roomId: string, eliminatedId: string) {
   game.remainingMajority = numMajority;
   game.remainingMinority = numMinority;
 
-  // Track consecutive majority eliminations for minority win condition.
-  // Minority wins by eliminating majority twice in a row.
-  // Any minority elimination resets the streak.
   if (eliminatedPlayer.alliance === "Majority") {
     game.consecutiveMajorityEliminations = (game.consecutiveMajorityEliminations || 0) + 1;
   } else {
