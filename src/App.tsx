@@ -192,7 +192,7 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
 }
 
 export default function App() {
-  const { gameState, connect, socket } = useGameStore();
+  const { gameState, connect, socket, joinError, clearJoinError } = useGameStore();
   const [joined, setJoined] = useState(false);
   const [showHand, setShowHand] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
@@ -205,11 +205,19 @@ export default function App() {
     }
   }, [joined, gameState, socket]);
 
+  useEffect(() => {
+    if (!joinError) return;
+
+    alert(joinError);
+    setJoined(false);
+    clearJoinError();
+  }, [joinError, clearJoinError]);
+
   if (!joined) {
     return (
       <Home
-        onJoin={(roomId, name) => {
-          connect(roomId, name, "🎭");
+        onJoin={(roomId, name, intent) => {
+          connect(roomId, name, "🎭", intent);
           setJoined(true);
         }}
       />

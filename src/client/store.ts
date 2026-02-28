@@ -5,7 +5,9 @@ import { ClientGameState } from "../shared/types.js";
 interface GameStore {
   socket: Socket | null;
   gameState: ClientGameState | null;
-  connect: (roomId: string, name: string, avatar: string) => void;
+  connect: (roomId: string, name: string, avatar: string, intent: "create" | "join") => void;
+  joinError: string | null;
+  clearJoinError: () => void;
   updatePlayer: (name: string, avatar: string, ready: boolean) => void;
   addBot: () => void;
   advancePhase: () => void;
@@ -25,29 +27,34 @@ interface GameStore {
 export const useGameStore = create<GameStore>((set, get) => ({
   socket: null,
   gameState: null,
-  connect: (roomId, name, avatar) => {
+  joinError: null,
+  clearJoinError: () => set({ joinError: null }),
+  connect: (roomId, name, avatar, intent) => {
     console.log("Connecting to socket...");
     const socket = io();
     
     socket.on("connect", () => {
       console.log("Socket connected! Joining room:", roomId);
-      socket.emit("joinRoom", { roomId, name, avatar });
+      socket.emit("joinRoom", { roomId, name, avatar, intent });
     });
     
     socket.on("connect_error", (err) => {
       console.error("Socket connection error:", err);
+      set({ joinError: "Unable to connect to the game server.", socket: null, gameState: null });
     });
 
-    socket.on("error", (err) => {
+    socket.on("error", (err: string) => {
       console.error("Socket error:", err);
+      set({ joinError: err || "Unable to join this room.", socket: null, gameState: null });
+      socket.disconnect();
     });
 
     socket.on("gameState", (state: ClientGameState) => {
       console.log("Received game state:", state);
-      set({ gameState: state });
+      set({ gameState: state, joinError: null });
     });
     
-    set({ socket });
+    set({ socket, joinError: null });
   },
   updatePlayer: (name, avatar, ready) => {
     const { socket, gameState } = get();
@@ -134,6 +141,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
       socket.emit("leaveRoom", { roomId: gameState.roomId });
       socket.disconnect();
     }
-    set({ socket: null, gameState: null });
+    set({ socket: null, gameState: null, joinError: null });
   },
 }));

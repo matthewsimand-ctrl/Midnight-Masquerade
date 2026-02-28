@@ -113,10 +113,15 @@ export function setupGameSocket(io: Server) {
   io.on("connection", (socket: Socket) => {
     console.log("Client connected:", socket.id);
 
-    socket.on("joinRoom", ({ roomId, name, avatar }: { roomId: string, name: string, avatar: string }) => {
-      socket.join(roomId);
-      
+    socket.on("joinRoom", ({ roomId, name, avatar, intent }: { roomId: string, name: string, avatar: string, intent?: "create" | "join" }) => {
+      const action = intent || "join";
+
       if (!rooms[roomId]) {
+        if (action === "join") {
+          socket.emit("error", "Room not found. Check the room code and try again.");
+          return;
+        }
+
         rooms[roomId] = {
           roomId,
           hostId: socket.id,
@@ -147,7 +152,12 @@ export function setupGameSocket(io: Server) {
           revealMotifDuringDiscussion: false,
           revealMotifDuringElimination: false,
         };
+      } else if (action === "create") {
+        socket.emit("error", "That room code is already in use. Please create a new room.");
+        return;
       }
+
+      socket.join(roomId);
 
       const game = rooms[roomId];
       if (game.phase !== "Lobby" && !game.players[socket.id]) {
