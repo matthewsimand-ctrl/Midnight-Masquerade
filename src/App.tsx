@@ -260,7 +260,7 @@ export default function App() {
       {isHost && gameState.phase !== "Lobby" && gameState.phase !== "GameOver" && (
         <button
           onClick={() => setShowEndConfirm(true)}
-          className="fixed bottom-6 left-6 z-50 bg-[var(--color-charcoal-rich)] border border-[var(--color-crimson)]/50 text-[var(--color-ash)] hover:text-[var(--color-crimson)] px-3 py-1.5 rounded text-xs font-serif uppercase tracking-widest transition-colors shadow-lg"
+          className="fixed bottom-6 left-6 z-50 hidden sm:block bg-[var(--color-charcoal-rich)] border border-[var(--color-crimson)]/50 text-[var(--color-ash)] hover:text-[var(--color-crimson)] px-3 py-1.5 rounded text-xs font-serif uppercase tracking-widest transition-colors shadow-lg"
         >
           End Game
         </button>
@@ -317,7 +317,7 @@ export default function App() {
           <>
             <button
               onClick={() => setShowHand(!showHand)}
-              className="fixed bottom-6 right-6 z-50 bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] px-6 py-3 rounded font-serif font-bold uppercase tracking-widest shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-105 transition-transform"
+              className="fixed bottom-6 right-6 z-50 hidden sm:block bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] px-6 py-3 rounded font-serif font-bold uppercase tracking-widest shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-105 transition-transform"
             >
               {showHand ? "Hide Hand" : "View Hand"}
             </button>
