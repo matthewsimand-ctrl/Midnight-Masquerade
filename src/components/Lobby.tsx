@@ -5,18 +5,8 @@ import { RulesModal } from "./RulesModal.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CUSTOM MASKS
-// To add your own mask images:
-//   1. Drop your PNG/JPG files into the `public/masks/` folder in your project
-//      (e.g. public/masks/wolf.png, public/masks/butterfly.png)
-//   2. Add the path (starting with "/masks/") to the CUSTOM_MASK_IMAGES array below
-//   3. They'll appear in the mask picker alongside the emoji options
 // ─────────────────────────────────────────────────────────────────────────────
 export const CUSTOM_MASK_IMAGES: string[] = [
-  // "/masks/wolf.png",
-  // "/masks/butterfly.png",
-  // "/masks/fox.png",
-  // "/masks/raven.png",
-  // Add your own paths here ↑
   "/masks/Beak.png",
   "/masks/Bird.png",
   "/masks/Black.png",
