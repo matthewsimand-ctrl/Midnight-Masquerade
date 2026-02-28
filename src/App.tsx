@@ -25,7 +25,15 @@ function generateRoomCode() {
   return (random + timestampPart).slice(0, 6); // 6-char code, timestamp-salted
 }
 
-function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
+function normalizeRoomId(value: string) {
+  return value.replace(/\s+/g, "").toUpperCase();
+}
+
+function Home({
+  onJoin,
+}: {
+  onJoin: (roomId: string, name: string, intent: "create" | "join") => void;
+}) {
   const [name, setName] = useState("");
   const [roomId, setRoomId] = useState("");
   const [mode, setMode] = useState<"home" | "create" | "join">("home");
@@ -142,7 +150,7 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
                     type="text"
                     placeholder="B00B5"
                     value={roomId}
-                    onChange={(e) => setRoomId(e.target.value.toUpperCase())}
+                    onChange={(e) => setRoomId(normalizeRoomId(e.target.value))}
                     className="w-full bg-[var(--color-velvet)] border border-[var(--color-charcoal-rich)] rounded px-4 py-3 text-[var(--color-ivory)] font-mono uppercase focus:outline-none focus:border-[var(--color-gold)]"
                   />
                 </div>
@@ -152,11 +160,14 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
                 onClick={() => {
                   if (name) {
                     if (mode === "create") {
-                      onJoin(generateRoomCode(), name);
-                    } else if (roomId) {
-                      onJoin(roomId, name);
+                      onJoin(normalizeRoomId(generateRoomCode()), name, "create");
                     } else {
-                      alert("Please enter a room code.");
+                      const normalizedRoomId = normalizeRoomId(roomId);
+                      if (normalizedRoomId) {
+                        onJoin(normalizedRoomId, name, "join");
+                      } else {
+                        alert("Please enter a room code.");
+                      }
                     }
                   } else {
                     alert("Please enter your name.");
@@ -185,7 +196,7 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
 }
 
 export default function App() {
-  const { gameState, connect, socket } = useGameStore();
+  const { gameState, connect, socket, joinError, clearJoinError } = useGameStore();
   const [joined, setJoined] = useState(false);
   const [showHand, setShowHand] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
@@ -198,11 +209,19 @@ export default function App() {
     }
   }, [joined, gameState, socket]);
 
+  useEffect(() => {
+    if (!joinError) return;
+
+    alert(joinError);
+    setJoined(false);
+    clearJoinError();
+  }, [joinError, clearJoinError]);
+
   if (!joined) {
     return (
       <Home
-        onJoin={(roomId, name) => {
-          connect(roomId, name, "🎭");
+        onJoin={(roomId, name, intent) => {
+          connect(roomId, name, "🎭", intent);
           setJoined(true);
         }}
       />
