@@ -29,11 +29,7 @@ function normalizeRoomId(value: string) {
   return value.replace(/\s+/g, "").toUpperCase();
 }
 
-function Home({
-  onJoin,
-}: {
-  onJoin: (roomId: string, name: string, intent: "create" | "join") => void;
-}) {
+function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
   const [name, setName] = useState("");
   const [roomId, setRoomId] = useState("");
   const [mode, setMode] = useState<"home" | "create" | "join">("home");
@@ -160,11 +156,11 @@ function Home({
                 onClick={() => {
                   if (name) {
                     if (mode === "create") {
-                      onJoin(normalizeRoomId(generateRoomCode()), name, "create");
+                      onJoin(normalizeRoomId(generateRoomCode()), name);
                     } else {
                       const normalizedRoomId = normalizeRoomId(roomId);
                       if (normalizedRoomId) {
-                        onJoin(normalizedRoomId, name, "join");
+                        onJoin(normalizedRoomId, name);
                       } else {
                         alert("Please enter a room code.");
                       }
