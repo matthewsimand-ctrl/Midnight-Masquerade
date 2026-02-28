@@ -30,7 +30,7 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 z-50 flex items-center px-6 h-[52px] select-none"
+      className="fixed top-0 left-0 right-0 z-50 flex flex-wrap items-center gap-y-2 px-3 py-2 sm:px-6 sm:py-0 sm:h-[52px] select-none"
       style={{
         background:
           "linear-gradient(180deg, #0f0e0c 0%, #161410 100%)",
@@ -39,7 +39,7 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
       }}
     >
       {/* LEFT — Round + Phase */}
-      <div className="flex flex-col justify-center min-w-[160px]">
+      <div className="flex flex-col justify-center min-w-0 w-full sm:w-auto sm:min-w-[160px]">
         <span
           className="font-serif uppercase tracking-[0.22em] text-[9px]"
           style={{ color: "rgba(212,175,55,0.55)" }}
@@ -55,7 +55,7 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
       </div>
 
       {/* CENTER — Timer + Factions */}
-      <div className="flex-1 flex items-center justify-center gap-8">
+      <div className="order-3 sm:order-none w-full sm:w-auto sm:flex-1 flex items-center justify-center gap-3 sm:gap-8">
         {/* Timer circle */}
         <div
           className="relative w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
@@ -72,7 +72,7 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <span
             className="font-serif uppercase tracking-widest text-[9px]"
             style={{ color: "var(--color-gold)" }}
@@ -80,7 +80,7 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
             The Lions
           </span>
           <span
-            className="font-serif text-[12px]"
+            className="font-serif text-[10px] sm:text-[12px]"
             style={{ color: "var(--color-gold)" }}
           >
             {activeMajority} remaining
@@ -93,7 +93,7 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
           style={{ background: "rgba(212,175,55,0.15)" }}
         />
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <span
             className="font-serif uppercase tracking-widest text-[9px]"
             style={{ color: "rgba(42,160,160,0.9)" }}
@@ -101,7 +101,7 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
             The Serpents
           </span>
           <span
-            className="font-serif text-[12px]"
+            className="font-serif text-[10px] sm:text-[12px]"
             style={{ color: "rgba(42,160,160,0.9)" }}
           >
             {activeMinority} remaining
@@ -110,9 +110,9 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
       </div>
 
       {/* RIGHT — Motif + Journal */}
-      <div className="flex items-center gap-3 min-w-[200px] justify-end">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 sm:min-w-[200px] justify-end ml-auto">
         {gameState.currentMotif && (
-          <div className="flex flex-col items-end mr-1">
+          <div className="hidden sm:flex flex-col items-end mr-1">
             <span
               className="font-serif uppercase tracking-[0.18em] text-[8px]"
               style={{ color: "rgba(212,175,55,0.5)" }}
