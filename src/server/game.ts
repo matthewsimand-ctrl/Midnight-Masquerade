@@ -68,7 +68,6 @@ function getBattleRoyaleSplit(playerCount: number) {
       minority: Math.max(playerCount / 2 - 1, 0),
     };
   }
-
   return {
     majority: Math.ceil(playerCount / 2),
     minority: Math.floor(playerCount / 2),
@@ -80,7 +79,6 @@ function getTiedLeaders(voteCounts: Record<string, number>) {
   for (const targetId in voteCounts) {
     maxVotes = Math.max(maxVotes, voteCounts[targetId]);
   }
-
   if (maxVotes <= 0) return [];
   return Object.keys(voteCounts).filter((id) => voteCounts[id] === maxVotes);
 }
@@ -171,6 +169,21 @@ export function setupGameSocket(io: Server) {
       socket.join(resolvedRoomId);
 
       const game = rooms[resolvedRoomId];
+
+      // ── Reconnection: if a human player with the same name already exists
+      // under a different (stale) socket ID, migrate them to the new socket.
+      if (!game.players[socket.id]) {
+        const staleEntry = Object.values(game.players).find(
+          (p) => !p.isBot && p.name === name
+        );
+        if (staleEntry && staleEntry.id !== socket.id) {
+          game.players[socket.id] = { ...staleEntry, id: socket.id };
+          delete game.players[staleEntry.id];
+          if (game.hostId === staleEntry.id) {
+            game.hostId = socket.id;
+          }
+        }
+      }
 
       if (game.phase !== "Lobby" && !game.players[socket.id]) {
         socket.emit("error", "Game already in progress");
@@ -266,7 +279,6 @@ export function setupGameSocket(io: Server) {
     socket.on("leaveRoom", ({ roomId }: { roomId: string }) => {
       const game = rooms[roomId];
       if (!game || !game.players[socket.id]) return;
-
       if (game.phase !== "Lobby") return;
 
       delete game.players[socket.id];
@@ -303,25 +315,15 @@ export function setupGameSocket(io: Server) {
 
     socket.on("vote", ({ roomId, targetId }: { roomId: string, targetId: string }) => {
       const game = rooms[roomId];
-      if (!game || game.phase !== "EliminationVote" || !isPlayerActive(game, socket.id)) {
-        return;
-      }
-
-      if (!isPlayerActive(game, targetId)) {
-        return;
-      }
-
-      if (targetId === socket.id) {
-        return;
-      }
+      if (!game || game.phase !== "EliminationVote" || !isPlayerActive(game, socket.id)) return;
+      if (!isPlayerActive(game, targetId)) return;
+      if (targetId === socket.id) return;
 
       const tiedIds = game.tiebreakerTiedPlayerIds || [];
       if (game.tiebreakerStage === "Revote") {
         const isTiedVoter = tiedIds.includes(socket.id);
         const isTiedTarget = tiedIds.includes(targetId);
-        if (isTiedVoter || !isTiedTarget) {
-          return;
-        }
+        if (isTiedVoter || !isTiedTarget) return;
       }
 
       game.votes[socket.id] = targetId;
@@ -351,17 +353,11 @@ export function setupGameSocket(io: Server) {
 
     socket.on("submitAllianceGuess", ({ roomId, alliance }: { roomId: string, alliance: "Majority" | "Minority" }) => {
       const game = rooms[roomId];
-      if (!game || game.phase !== "EliminationVote" || game.tiebreakerStage !== "AllianceGuess") {
-        return;
-      }
-
-      if (!isPlayerActive(game, socket.id)) {
-        return;
-      }
+      if (!game || game.phase !== "EliminationVote" || game.tiebreakerStage !== "AllianceGuess") return;
+      if (!isPlayerActive(game, socket.id)) return;
 
       game.allianceGuesses = game.allianceGuesses || {};
       game.allianceGuesses[socket.id] = alliance;
-
       broadcastState(io, roomId);
     });
 
@@ -469,7 +465,7 @@ function broadcastState(io: Server, roomId: string) {
       if (partnerId && game.sharedCards[partnerId]) {
         clientState.sharedCards[partnerId] = game.sharedCards[partnerId];
       }
-      
+
       const activePlayersInPairs = Object.keys(game.dancePairs);
       clientState.allPairsShared = activePlayersInPairs.length === 0 || activePlayersInPairs.every(pid => {
         const p2 = game.dancePairs[pid];
@@ -480,7 +476,7 @@ function broadcastState(io: Server, roomId: string) {
     for (const pid in game.players) {
       const p = game.players[pid];
       const isMe = pid === playerId;
-      
+
       clientState.players[pid] = {
         id: p.id,
         name: p.name,
@@ -560,7 +556,7 @@ function startGame(io: Server, roomId: string) {
   const game = rooms[roomId];
   const playerIds = Object.keys(game.players);
   const playerCount = playerIds.length;
-  
+
   if (playerCount < 4) return;
 
   game.round = 1;
@@ -591,10 +587,10 @@ function startGame(io: Server, roomId: string) {
   for (let i = 0; i < playerCount; i++) {
     const pid = shuffledIds[i];
     game.players[pid].alliance = i < majSize ? "Majority" : "Minority";
-    
+
     const images = [...IMAGE_CARDS].sort(() => Math.random() - 0.5).slice(0, 7);
     const words = [...WORD_CARDS].sort(() => Math.random() - 0.5).slice(0, 8);
-    game.players[pid].hand = [...images, ...words].map(c => ({...c, id: uuidv4()}));
+    game.players[pid].hand = [...images, ...words].map(c => ({ ...c, id: uuidv4() }));
   }
 
   game.usedMotifs = [];
@@ -612,13 +608,12 @@ function startPrivateDance(io: Server, roomId: string) {
   const activePlayers = Object.values(game.players).filter(p => !p.isEliminated).map(p => p.id);
   const shuffled = [...activePlayers].sort(() => Math.random() - 0.5);
   const pairs: Record<string, string> = {};
-  
+
   for (let i = 0; i < shuffled.length; i++) {
     pairs[shuffled[i]] = shuffled[(i + 1) % shuffled.length];
   }
   game.dancePairs = pairs;
 
-  // Bots share a random card and, in Battle Royale, immediately draw a replacement.
   for (const pid of activePlayers) {
     const p = game.players[pid];
     if (p.isBot && p.hand.length > 0 && pairs[pid]) {
@@ -637,7 +632,7 @@ function startPrivateDance(io: Server, roomId: string) {
 function startGossipSalon(io: Server, roomId: string) {
   const game = rooms[roomId];
   game.phase = "GossipSalon";
-  
+
   for (const playerId in game.dancePairs) {
     const senderId = Object.keys(game.dancePairs).find(id => game.dancePairs[id] === playerId);
     if (senderId) {
@@ -687,23 +682,18 @@ function resolveVote(io: Server, roomId: string) {
     .filter((player) => !player.isEliminated)
     .map((player) => player.id);
 
-  if (activePlayerIds.length === 0) {
-    return;
-  }
+  if (activePlayerIds.length === 0) return;
 
   const activePlayerIdSet = new Set(activePlayerIds);
   const voteCounts: Record<string, number> = {};
   for (const voterId in game.votes) {
     if (!activePlayerIdSet.has(voterId)) continue;
-
     const targetId = game.votes[voterId];
     if (!activePlayerIdSet.has(targetId)) continue;
 
     if (game.tiebreakerStage === "Revote") {
       const tiedIds = game.tiebreakerTiedPlayerIds || [];
-      if (tiedIds.includes(voterId) || !tiedIds.includes(targetId)) {
-        continue;
-      }
+      if (tiedIds.includes(voterId) || !tiedIds.includes(targetId)) continue;
     }
 
     voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
@@ -721,7 +711,6 @@ function resolveVote(io: Server, roomId: string) {
         const p = game.players[pid];
         const isTiedPlayer = tiedLeaders.includes(pid);
         if (!p.isBot || isTiedPlayer) continue;
-
         game.votes[pid] = tiedLeaders[Math.floor(Math.random() * tiedLeaders.length)];
       }
 
@@ -787,7 +776,6 @@ function resolveVote(io: Server, roomId: string) {
     }
 
     const activeMajorityIds = getForcedMajorityCandidates(game, eliminatedId);
-
     game.forcedEliminationChooserId = eliminatedId;
     game.forcedEliminationCandidates = activeMajorityIds;
 
@@ -848,8 +836,7 @@ function applyEliminations(io: Server, roomId: string, eliminatedIds: string[]) 
     const split = getBattleRoyaleSplit(activeCount);
     const shuffledActiveIds = activePlayers.map((p) => p.id).sort(() => Math.random() - 0.5);
     for (let i = 0; i < shuffledActiveIds.length; i++) {
-      const pid = shuffledActiveIds[i];
-      game.players[pid].alliance = i < split.majority ? "Majority" : "Minority";
+      game.players[shuffledActiveIds[i]].alliance = i < split.majority ? "Majority" : "Minority";
     }
   }
 
@@ -903,8 +890,7 @@ function applyElimination(io: Server, roomId: string, eliminatedId: string) {
     const split = getBattleRoyaleSplit(activeCount);
     const shuffledActiveIds = activePlayers.map((p) => p.id).sort(() => Math.random() - 0.5);
     for (let i = 0; i < shuffledActiveIds.length; i++) {
-      const pid = shuffledActiveIds[i];
-      game.players[pid].alliance = i < split.majority ? "Majority" : "Minority";
+      game.players[shuffledActiveIds[i]].alliance = i < split.majority ? "Majority" : "Minority";
     }
   }
 
@@ -928,6 +914,6 @@ function applyElimination(io: Server, roomId: string, eliminatedId: string) {
       game.winner = "Minority";
     }
   }
-  
+
   broadcastState(io, roomId);
 }
