@@ -16,31 +16,31 @@ export function Journal({ isOpen, onClose }: JournalProps) {
 
   return (
     <div
-      className={`fixed top-[96px] sm:top-[52px] right-0 bg-[var(--color-velvet)] border-l-2 border-[var(--color-gold)]/40 flex flex-col transition-transform duration-500 ease-in-out z-40 ${
+      className={`fixed top-[52px] right-0 bg-[var(--color-velvet)] border-l-2 border-[var(--color-gold)]/40 flex flex-col transition-transform duration-500 ease-in-out z-40 ${
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
       style={{ width: "min(100vw, 320px)", bottom: 0 }}
     >
       <div className="velvet-texture"></div>
 
-      <div className="p-4 sm:p-6 border-b border-[var(--color-charcoal-warm)] relative z-10 flex items-center gap-3">
-        <PenTool className="text-[var(--color-gold)]" size={20} />
+      <div className="p-4 sm:p-5 border-b border-[var(--color-charcoal-warm)] relative z-10 flex items-center gap-3 flex-shrink-0">
+        <PenTool className="text-[var(--color-gold)]" size={18} />
         <div>
-          <h2 className="text-lg sm:text-xl font-serif text-[var(--color-ivory)]">
+          <h2 className="text-base sm:text-lg font-serif text-[var(--color-ivory)]">
             My Masque Journal
           </h2>
-          <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mt-1">
+          <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mt-0.5">
             Observer's Notes
           </p>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 relative z-10">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 relative z-10">
         {me.journal && me.journal.length > 0 ? (
           me.journal.map((entry, idx) => (
             <div
               key={idx}
-              className="bg-[var(--color-ballroom)] border border-[var(--color-charcoal-rich)] rounded-lg p-4 shadow-md"
+              className="bg-[var(--color-ballroom)] border border-[var(--color-charcoal-rich)] rounded-lg p-3 sm:p-4 shadow-md"
             >
               <div className="flex justify-between items-center mb-3 pb-2 border-b border-[var(--color-charcoal-warm)]">
                 <span className="text-[10px] text-[var(--color-gold)] font-bold uppercase tracking-widest">
@@ -55,23 +55,14 @@ export function Journal({ isOpen, onClose }: JournalProps) {
                 {entry.receivedCard.type === "Image" ? (
                   <>
                     <div className="h-5 bg-gradient-to-r from-[var(--color-gold)] to-transparent flex items-center px-1">
-                      <span className="font-serif text-[7px] text-[var(--color-midnight)] tracking-widest">
-                        ✶ IMAGE
-                      </span>
+                      <span className="font-serif text-[7px] text-[var(--color-midnight)] tracking-widest">✶ IMAGE</span>
                     </div>
-                    <img
-                      src={entry.receivedCard.content}
-                      alt="Card"
-                      className="w-full flex-1 object-cover"
-                      referrerPolicy="no-referrer"
-                    />
+                    <img src={entry.receivedCard.content} alt="Card" className="w-full flex-1 object-cover" referrerPolicy="no-referrer" />
                   </>
                 ) : (
                   <>
                     <div className="h-5 bg-[var(--color-burgundy)] flex items-center px-1">
-                      <span className="font-serif text-[7px] text-[var(--color-ivory)] tracking-widest">
-                        ⦿ WORD
-                      </span>
+                      <span className="font-serif text-[7px] text-[var(--color-ivory)] tracking-widest">⦿ WORD</span>
                     </div>
                     <div className="flex-1 flex items-center justify-center p-2 bg-[var(--color-ballroom)] text-[var(--color-ivory)] font-serif italic text-sm text-center break-words border-y border-[var(--color-gold)]/30 my-2 mx-1">
                       {entry.receivedCard.content}
