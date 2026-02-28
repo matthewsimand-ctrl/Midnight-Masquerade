@@ -39,7 +39,7 @@ export function PrivateDance() {
 
   if (me?.isEliminated) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 relative overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden">
         <div className="velvet-texture"></div>
         <h2 className="text-2xl text-[var(--color-ash)] font-serif mb-4 uppercase tracking-widest z-10">You are eliminated.</h2>
         <p className="text-[var(--color-ivory-antique)] z-10">The private dances are happening behind closed doors...</p>
@@ -59,7 +59,7 @@ export function PrivateDance() {
 
   if (!partnerId) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 relative overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden">
         <div className="velvet-texture"></div>
         <h2 className="text-2xl text-[var(--color-ash)] font-serif mb-4 uppercase tracking-widest z-10">You are resting this dance.</h2>
         <p className="text-[var(--color-ivory-antique)] z-10">Observe the others as they share their secrets...</p>
@@ -114,21 +114,21 @@ export function PrivateDance() {
 
       <div className="velvet-texture"></div>
 
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 bg-[var(--color-velvet)] border border-[var(--color-gold)]/30 rounded-full px-8 py-2 shadow-[0_0_20px_rgba(212,175,55,0.15)]">
-        <p className="text-[var(--color-gold)] font-serif text-lg tracking-widest">"{gameState.currentMotif}"</p>
+      <div className="absolute top-2 sm:top-6 left-1/2 -translate-x-1/2 z-20 bg-[var(--color-velvet)] border border-[var(--color-gold)]/30 rounded-full px-4 sm:px-8 py-2 shadow-[0_0_20px_rgba(212,175,55,0.15)] max-w-[92vw]">
+        <p className="text-[var(--color-gold)] font-serif text-sm sm:text-lg tracking-widest truncate">"{gameState.currentMotif}"</p>
       </div>
 
-      <div className="w-full h-full flex relative z-10 pt-24 pb-24">
+      <div className="w-full h-full flex flex-col sm:flex-row relative z-10 pt-20 sm:pt-24 pb-28 sm:pb-24 overflow-y-auto">
         {!mySharedCard ? (
           /* ── Card selection view ── */
-          <div className="w-full flex flex-col items-center px-12 relative z-10">
+          <div className="w-full flex flex-col items-center px-4 sm:px-12 relative z-10">
             <div className="flex flex-col items-center mb-8">
               <h3 className="text-xl font-serif text-[var(--color-gold)] uppercase tracking-widest">Your Hand</h3>
               <p className="text-[var(--color-ash)] text-sm mt-2">Sharing with {partner?.name}</p>
             </div>
 
             <div className="w-full max-w-4xl">
-              <div className="grid grid-cols-3 md:grid-cols-5 gap-4 mb-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
                 {shuffledHand.map(card => (
                   <button
                     key={card.id}
@@ -164,7 +164,7 @@ export function PrivateDance() {
                 <div className="flex justify-center animate-in slide-in-from-bottom-4">
                   <button
                     onClick={() => shareCard(selectedCardId)}
-                    className="px-8 py-3 rounded bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] font-serif font-bold uppercase tracking-widest shadow-[0_0_30px_rgba(212,175,55,0.6)] hover:scale-105 transition-transform animate-pulse"
+                    className="px-6 sm:px-8 py-3 rounded bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] font-serif font-bold uppercase tracking-widest shadow-[0_0_30px_rgba(212,175,55,0.6)] hover:scale-105 transition-transform animate-pulse"
                   >
                     Share This Card
                   </button>
@@ -175,10 +175,10 @@ export function PrivateDance() {
         ) : (
           /* ── Both cards view ── */
           <>
-            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[var(--color-gold)]/50 to-transparent -translate-x-1/2 z-0"></div>
+            <div className="hidden sm:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[var(--color-gold)]/50 to-transparent -translate-x-1/2 z-0"></div>
 
             {/* My card */}
-            <div className="w-1/2 flex flex-col items-center px-12 relative z-10">
+            <div className="w-full sm:w-1/2 flex flex-col items-center px-4 sm:px-12 relative z-10 mb-8 sm:mb-0">
               <div className="flex flex-col items-center mb-8">
                 <div className="w-24 h-24 rounded-full bg-[var(--color-charcoal-rich)] border-2 border-[var(--color-gold)]/30 flex items-center justify-center text-4xl mb-4 animate-float overflow-hidden">
                   {me?.avatar?.startsWith('/') ? (
@@ -187,13 +187,13 @@ export function PrivateDance() {
                 </div>
                 <h3 className="text-xl font-serif text-[var(--color-gold)] uppercase tracking-widest">Your Card</h3>
               </div>
-              <div className="w-48 aspect-[2/3] rounded-md border-2 border-[var(--color-gold)] overflow-hidden shadow-[0_0_30px_rgba(212,175,55,0.2)]">
+              <div className="w-36 sm:w-48 aspect-[2/3] rounded-md border-2 border-[var(--color-gold)] overflow-hidden shadow-[0_0_30px_rgba(212,175,55,0.2)]">
                 <CardFace card={mySharedCard} />
               </div>
             </div>
 
             {/* Partner's card */}
-            <div className="w-1/2 flex flex-col items-center px-12 relative z-10">
+            <div className="w-full sm:w-1/2 flex flex-col items-center px-4 sm:px-12 relative z-10 mb-8 sm:mb-0">
               <div className="flex flex-col items-center mb-8">
                 <div className="w-24 h-24 rounded-full bg-[var(--color-charcoal-rich)] border-2 border-[var(--color-gold)]/30 flex items-center justify-center text-4xl mb-4 animate-float overflow-hidden" style={{ animationDelay: '1s' }}>
                   {partner?.avatar?.startsWith('/') ? (
@@ -203,7 +203,7 @@ export function PrivateDance() {
                 <h3 className="text-xl font-serif text-[var(--color-gold)] uppercase tracking-widest">{partner?.name}'s Card</h3>
               </div>
 
-              <div className="w-48 aspect-[2/3] relative">
+              <div className="w-36 sm:w-48 aspect-[2/3] relative">
                 {/* Card back — slides away upward when revealed */}
                 <div
                   className={`absolute inset-0 rounded-md border border-[var(--color-charcoal-rich)] bg-[var(--color-velvet)] flex items-center justify-center transition-all duration-700 ease-in-out ${
@@ -241,11 +241,11 @@ export function PrivateDance() {
         )}
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[var(--color-midnight)] to-transparent z-20 flex items-center justify-center">
+      <div className="absolute bottom-0 left-0 right-0 h-28 sm:h-24 bg-gradient-to-t from-[var(--color-midnight)] to-transparent z-20 flex items-end sm:items-center justify-center pb-4 sm:pb-0 px-4">
         {isHost && gameState.allPairsShared && (
           <button
             onClick={() => advancePhase()}
-            className="px-8 py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform animate-in slide-in-from-bottom-8"
+            className="px-5 sm:px-8 py-3 sm:py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform animate-in slide-in-from-bottom-8"
           >
             Conclude the Dance
           </button>

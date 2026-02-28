@@ -290,6 +290,10 @@ export function setupGameSocket(io: Server) {
         return;
       }
 
+      if (targetId === socket.id) {
+        return;
+      }
+
       const tiedIds = game.tiebreakerTiedPlayerIds || [];
       if (game.tiebreakerStage === "Revote") {
         const isTiedVoter = tiedIds.includes(socket.id);
@@ -704,29 +708,27 @@ function resolveVote(io: Server, roomId: string) {
       return;
     }
 
-    if (game.tiebreakerStage !== "AllianceGuess") {
-      if (game.gameMode === "BattleRoyale") {
-        game.tiebreakerStage = "AllianceGuess";
-        game.tiebreakerTiedPlayerIds = tiedLeaders;
-        game.votes = {};
-        game.allianceGuesses = {};
+    if (game.gameMode === "BattleRoyale") {
+      game.tiebreakerStage = "AllianceGuess";
+      game.tiebreakerTiedPlayerIds = tiedLeaders;
+      game.votes = {};
+      game.allianceGuesses = {};
 
-        for (const pid of activePlayerIds) {
-          const p = game.players[pid];
-          if (!p.isBot) continue;
-          game.allianceGuesses[pid] = Math.random() < 0.5 ? "Majority" : "Minority";
-        }
-
-        broadcastState(io, roomId);
-        return;
+      for (const pid of activePlayerIds) {
+        const p = game.players[pid];
+        if (!p.isBot) continue;
+        game.allianceGuesses[pid] = Math.random() < 0.5 ? "Majority" : "Minority";
       }
 
-      const lions = tiedLeaders.filter((id) => game.players[id].alliance === "Majority");
-      const pool = lions.length > 0 ? lions : tiedLeaders;
-      const eliminatedId = pool[Math.floor(Math.random() * pool.length)];
-      applyElimination(io, roomId, eliminatedId);
+      broadcastState(io, roomId);
       return;
     }
+
+    const lions = tiedLeaders.filter((id) => game.players[id].alliance === "Majority");
+    const pool = lions.length > 0 ? lions : tiedLeaders;
+    const eliminatedId = pool[Math.floor(Math.random() * pool.length)];
+    applyElimination(io, roomId, eliminatedId);
+    return;
   }
 
   if (game.tiebreakerStage === "AllianceGuess") {
