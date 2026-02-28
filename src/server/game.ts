@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-type MotifContent = { text: string; keywords: string[] };
+type CipherContent = { text: string; keywords: string[] };
 
 type JsonCardContent = string[];
 
@@ -18,7 +18,7 @@ function loadJsonFile<T>(relativePath: string): T {
   return JSON.parse(fileContents) as T;
 }
 
-const MOTIFS = loadJsonFile<MotifContent[]>("../content/motifs.json");
+const CIPHERS = loadJsonFile<CipherContent[]>("../content/ciphers.json");
 
 const IMAGE_CARDS: Card[] = loadJsonFile<JsonCardContent>("../content/images.json").map((url, i) => ({
   id: `i${i}`,
@@ -93,24 +93,24 @@ function getAvailableAvatar(game: GameState): string {
   return available.length > 0 ? available[0] : "🎭";
 }
 
-function assignNewAllianceMotifs(game: GameState) {
-  const usedMotifs = new Set(game.usedMotifs || []);
-  const availableMotifs = MOTIFS.filter((motif) => !usedMotifs.has(motif.text));
+function assignNewAllianceCiphers(game: GameState) {
+  const usedCiphers = new Set(game.usedCiphers || []);
+  const availableCiphers = CIPHERS.filter((cipher) => !usedCiphers.has(cipher.text));
 
-  if (availableMotifs.length < 2) {
-    game.usedMotifs = [];
-    availableMotifs.push(...MOTIFS);
+  if (availableCiphers.length < 2) {
+    game.usedCiphers = [];
+    availableCiphers.push(...CIPHERS);
   }
 
-  const shuffledMotifs = [...availableMotifs].sort(() => Math.random() - 0.5);
-  game.allianceMotifs["Majority"] = shuffledMotifs[0].text;
-  game.allianceKeywords["Majority"] = shuffledMotifs[0].keywords;
-  game.allianceMotifs["Minority"] = shuffledMotifs[1].text;
-  game.allianceKeywords["Minority"] = shuffledMotifs[1].keywords;
-  game.usedMotifs = [
-    ...(game.usedMotifs || []),
-    shuffledMotifs[0].text,
-    shuffledMotifs[1].text,
+  const shuffledCiphers = [...availableCiphers].sort(() => Math.random() - 0.5);
+  game.allianceCiphers["Majority"] = shuffledCiphers[0].text;
+  game.allianceKeywords["Majority"] = shuffledCiphers[0].keywords;
+  game.allianceCiphers["Minority"] = shuffledCiphers[1].text;
+  game.allianceKeywords["Minority"] = shuffledCiphers[1].keywords;
+  game.usedCiphers = [
+    ...(game.usedCiphers || []),
+    shuffledCiphers[0].text,
+    shuffledCiphers[1].text,
   ];
 }
 
@@ -135,7 +135,7 @@ export function setupGameSocket(io: Server) {
           phase: "Lobby",
           round: 0,
           maxRounds: 0,
-          allianceMotifs: {},
+          allianceCiphers: {},
           allianceKeywords: {},
           minorityPenaltyRound: false,
           dancePairs: {},
@@ -151,12 +151,12 @@ export function setupGameSocket(io: Server) {
           forcedEliminationCandidates: [],
           coWinners: [],
           consecutiveMajorityEliminations: 0,
-          usedMotifs: [],
+          usedCiphers: [],
           tiebreakerStage: "None",
           tiebreakerTiedPlayerIds: [],
           allianceGuesses: {},
-          revealMotifDuringDiscussion: false,
-          revealMotifDuringElimination: false,
+          revealCipherDuringDiscussion: false,
+          revealCipherDuringElimination: false,
         };
       } else {
         // "join" — room must already exist
@@ -260,18 +260,18 @@ export function setupGameSocket(io: Server) {
       }
     });
 
-    socket.on("setRevealMotifDuringDiscussion", ({ roomId, enabled }: { roomId: string, enabled: boolean }) => {
+    socket.on("setRevealCipherDuringDiscussion", ({ roomId, enabled }: { roomId: string, enabled: boolean }) => {
       const game = rooms[roomId];
       if (game && game.hostId === socket.id && game.phase === "Lobby") {
-        game.revealMotifDuringDiscussion = enabled;
+        game.revealCipherDuringDiscussion = enabled;
         broadcastState(io, roomId);
       }
     });
 
-    socket.on("setRevealMotifDuringElimination", ({ roomId, enabled }: { roomId: string, enabled: boolean }) => {
+    socket.on("setRevealCipherDuringElimination", ({ roomId, enabled }: { roomId: string, enabled: boolean }) => {
       const game = rooms[roomId];
       if (game && game.hostId === socket.id && game.phase === "Lobby") {
-        game.revealMotifDuringElimination = enabled;
+        game.revealCipherDuringElimination = enabled;
         broadcastState(io, roomId);
       }
     });
@@ -368,12 +368,12 @@ export function setupGameSocket(io: Server) {
         game.round = 0;
         game.winner = undefined;
         game.eliminatedThisRound = null;
-        game.currentMotif = undefined;
+        game.currentCipher = undefined;
         game.dancePairs = {};
         game.sharedCards = {};
         game.votes = {};
         game.consecutiveMajorityEliminations = 0;
-        game.usedMotifs = [];
+        game.usedCiphers = [];
         game.forcedEliminationChooserId = null;
         game.forcedEliminationCandidates = [];
         game.coWinners = [];
@@ -425,7 +425,7 @@ function broadcastState(io: Server, roomId: string) {
       hostId: game.hostId,
       phase: game.phase,
       round: game.round,
-      currentMotif: null,
+      currentCipher: null,
       dancePairs: game.dancePairs,
       danceRequests: game.danceRequests,
       sharedCards: {},
@@ -439,13 +439,13 @@ function broadcastState(io: Server, roomId: string) {
       forcedEliminationChooserId: game.forcedEliminationChooserId,
       forcedEliminationCandidates: game.forcedEliminationCandidates,
       coWinners: game.coWinners,
-      revealMotifDuringDiscussion: game.revealMotifDuringDiscussion,
-      revealMotifDuringElimination: game.revealMotifDuringElimination,
-      revealedAllianceMotifs: (
-        (game.phase === "GossipSalon" && game.revealMotifDuringDiscussion) ||
-        ((game.phase === "GameOver" || game.eliminatedThisRound) && game.revealMotifDuringElimination)
+      revealCipherDuringDiscussion: game.revealCipherDuringDiscussion,
+      revealCipherDuringElimination: game.revealCipherDuringElimination,
+      revealedAllianceCiphers: (
+        (game.phase === "GossipSalon" && game.revealCipherDuringDiscussion) ||
+        ((game.phase === "GameOver" || game.eliminatedThisRound) && game.revealCipherDuringElimination)
       )
-        ? game.allianceMotifs
+        ? game.allianceCiphers
         : undefined,
       tiebreakerStage: game.tiebreakerStage || "None",
       tiebreakerTiedPlayerIds: game.tiebreakerTiedPlayerIds || [],
@@ -454,7 +454,7 @@ function broadcastState(io: Server, roomId: string) {
     };
 
     if (game.phase !== "Lobby" && game.phase !== "Dealing" && game.phase !== "GossipSalon" && game.phase !== "GameOver" && player.alliance) {
-      clientState.currentMotif = game.allianceMotifs[player.alliance];
+      clientState.currentCipher = game.allianceCiphers[player.alliance];
     }
 
     if (game.phase === "PrivateDance") {
@@ -514,10 +514,10 @@ function advancePhase(io: Server, roomId: string) {
       broadcastState(io, roomId);
       break;
     case "Dealing":
-      game.phase = "MotifReveal";
+      game.phase = "CipherReveal";
       broadcastState(io, roomId);
       break;
-    case "MotifReveal":
+    case "CipherReveal":
       startPrivateDance(io, roomId);
       break;
     case "PrivateDance":
@@ -539,8 +539,8 @@ function advancePhase(io: Server, roomId: string) {
         } else {
           game.round++;
           game.eliminatedThisRound = null;
-          assignNewAllianceMotifs(game);
-          game.phase = "MotifReveal";
+          assignNewAllianceCiphers(game);
+          game.phase = "CipherReveal";
         }
         broadcastState(io, roomId);
       } else {
@@ -593,8 +593,8 @@ function startGame(io: Server, roomId: string) {
     game.players[pid].hand = [...images, ...words].map(c => ({ ...c, id: uuidv4() }));
   }
 
-  game.usedMotifs = [];
-  assignNewAllianceMotifs(game);
+  game.usedCiphers = [];
+  assignNewAllianceCiphers(game);
 
   game.phase = "RoleReveal";
   broadcastState(io, roomId);

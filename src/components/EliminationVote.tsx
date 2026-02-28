@@ -25,7 +25,7 @@ const getAvatarLabel = (avatar?: string) => {
   return avatar.split("/").pop()?.replace(/\.\w+$/, "") || "custom mask";
 };
 
-const ALLIANCE_MOTIF_ORDER = ["Majority", "Minority"] as const;
+const ALLIANCE_CIPHER_ORDER = ["Majority", "Minority"] as const;
 
 export function EliminationVote() {
   const { gameState, vote, advancePhase, chooseForcedElimination, submitAllianceGuess } = useGameStore();
@@ -80,18 +80,18 @@ export function EliminationVote() {
           <h2 className="text-2xl sm:text-3xl font-serif text-[var(--color-gold)] mb-3 uppercase tracking-widest text-center">Your Name Was Called</h2>
           <p className="text-[var(--color-ivory-antique)] mb-6 text-center text-sm sm:text-base">As a Majority player in Battle Royale, you survive and must choose another Majority player to eliminate.</p>
 
-          {gameState.revealedAllianceMotifs && (
+          {gameState.revealedAllianceCiphers && (
             <div className="mb-6 rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-ballroom)]/80 p-4 text-left w-full">
-              <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-4 text-center">Round Motifs Revealed</p>
+              <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-4 text-center">Round Ciphers Revealed</p>
               <div className="space-y-3">
-                {ALLIANCE_MOTIF_ORDER.map((alliance) => {
-                  const motif = gameState.revealedAllianceMotifs?.[alliance];
-                  if (!motif) return null;
+                {ALLIANCE_CIPHER_ORDER.map((alliance) => {
+                  const cipher = gameState.revealedAllianceCiphers?.[alliance];
+                  if (!cipher) return null;
                   const allianceDisplay = getAllianceDisplay(alliance);
                   return (
                     <div key={alliance}>
                       <p className={`text-xs uppercase tracking-widest ${allianceDisplay.colorClass}`}>{allianceDisplay.label}</p>
-                      <p className="text-[var(--color-ivory-antique)] font-serif">{motif}</p>
+                      <p className="text-[var(--color-ivory-antique)] font-serif">{cipher}</p>
                     </div>
                   );
                 })}
@@ -144,18 +144,18 @@ export function EliminationVote() {
               <div className="relative z-10">
                 <p className="text-[var(--color-ivory-antique)] text-base sm:text-xl mb-6 font-serif italic text-center">Everyone guessed correctly. The ball continues with all remaining guests.</p>
 
-                {gameState.revealedAllianceMotifs && (
+                {gameState.revealedAllianceCiphers && (
                   <div className="mb-6 rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-ballroom)]/80 p-4 text-left">
-                    <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-4 text-center">Round Motifs Revealed</p>
+                    <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-4 text-center">Round Ciphers Revealed</p>
                     <div className="space-y-3">
-                      {ALLIANCE_MOTIF_ORDER.map((alliance) => {
-                        const motif = gameState.revealedAllianceMotifs?.[alliance];
-                        if (!motif) return null;
+                      {ALLIANCE_CIPHER_ORDER.map((alliance) => {
+                        const cipher = gameState.revealedAllianceCiphers?.[alliance];
+                        if (!cipher) return null;
                         const allianceDisplay = getAllianceDisplay(alliance);
                         return (
                           <div key={alliance}>
                             <p className={`text-xs uppercase tracking-widest ${allianceDisplay.colorClass}`}>{allianceDisplay.label}</p>
-                            <p className="text-[var(--color-ivory-antique)] font-serif">{motif}</p>
+                            <p className="text-[var(--color-ivory-antique)] font-serif">{cipher}</p>
                           </div>
                         );
                       })}
@@ -258,18 +258,18 @@ export function EliminationVote() {
                 </p>
               )}
 
-              {gameState.revealedAllianceMotifs && (
+              {gameState.revealedAllianceCiphers && (
                 <div className="mb-6 rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-ballroom)]/80 p-4 text-left w-full">
-                  <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-4 text-center">Round Motifs Revealed</p>
+                  <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-4 text-center">Round Ciphers Revealed</p>
                   <div className="space-y-3">
-                    {ALLIANCE_MOTIF_ORDER.map((alliance) => {
-                      const motif = gameState.revealedAllianceMotifs?.[alliance];
-                      if (!motif) return null;
+                    {ALLIANCE_CIPHER_ORDER.map((alliance) => {
+                      const cipher = gameState.revealedAllianceCiphers?.[alliance];
+                      if (!cipher) return null;
                       const allianceDisplay = getAllianceDisplay(alliance);
                       return (
                         <div key={alliance}>
                           <p className={`text-xs uppercase tracking-widest ${allianceDisplay.colorClass}`}>{allianceDisplay.label}</p>
-                          <p className="text-[var(--color-ivory-antique)] font-serif">{motif}</p>
+                          <p className="text-[var(--color-ivory-antique)] font-serif">{cipher}</p>
                         </div>
                       );
                     })}
@@ -409,18 +409,18 @@ export function EliminationVote() {
         </h2>
         <p className="text-[var(--color-ash)] mb-6 italic font-serif text-sm sm:text-base text-center">Cast your vote. Someone must leave the ball.</p>
 
-        {gameState.revealedAllianceMotifs && (
+        {gameState.revealedAllianceCiphers && (
           <div className="mb-6 rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-ballroom)]/80 p-4 text-left w-full max-w-2xl">
-            <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-3 text-center">Round Motifs Revealed</p>
+            <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mb-3 text-center">Round Ciphers Revealed</p>
             <div className="space-y-3">
-              {ALLIANCE_MOTIF_ORDER.map((alliance) => {
-                const motif = gameState.revealedAllianceMotifs?.[alliance];
-                if (!motif) return null;
+              {ALLIANCE_CIPHER_ORDER.map((alliance) => {
+                const cipher = gameState.revealedAllianceCiphers?.[alliance];
+                if (!cipher) return null;
                 const allianceDisplay = getAllianceDisplay(alliance);
                 return (
                   <div key={alliance}>
                     <p className={`text-xs uppercase tracking-widest ${allianceDisplay.colorClass}`}>{allianceDisplay.label}</p>
-                    <p className="text-[var(--color-ivory-antique)] font-serif">{motif}</p>
+                    <p className="text-[var(--color-ivory-antique)] font-serif">{cipher}</p>
                   </div>
                 );
               })}

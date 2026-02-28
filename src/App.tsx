@@ -3,7 +3,7 @@ import { useGameStore } from "./client/store.js";
 import { Lobby } from "./components/Lobby.js";
 import { RoleReveal } from "./components/RoleReveal.js";
 import { Dealing } from "./components/Dealing.js";
-import { MotifReveal } from "./components/MotifReveal.js";
+import { CipherReveal } from "./components/CipherReveal.js";
 import { PrivateDance } from "./components/PrivateDance.js";
 import { GossipSalon } from "./components/GossipSalon.js";
 import { EliminationVote } from "./components/EliminationVote.js";
@@ -226,8 +226,8 @@ export default function App() {
         return <RoleReveal />;
       case "Dealing":
         return <Dealing />;
-      case "MotifReveal":
-        return <MotifReveal />;
+      case "CipherReveal":
+        return <CipherReveal />;
       case "PrivateDance":
         return <PrivateDance />;
       case "GossipSalon":

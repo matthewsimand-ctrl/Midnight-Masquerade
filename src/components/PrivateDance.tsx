@@ -111,9 +111,9 @@ export function PrivateDance() {
 
       <div className="velvet-texture"></div>
 
-      {/* Motif pill — sits just below header (top-[52px]) */}
+      {/* Cipher pill — sits just below header (top-[52px]) */}
       <div className="absolute top-[60px] sm:top-[60px] left-1/2 -translate-x-1/2 z-20 bg-[var(--color-velvet)] border border-[var(--color-gold)]/30 rounded-full px-4 sm:px-8 py-1.5 sm:py-2 shadow-[0_0_20px_rgba(212,175,55,0.15)] max-w-[88vw]">
-        <p className="text-[var(--color-gold)] font-serif text-xs sm:text-lg tracking-widest truncate">"{gameState.currentMotif}"</p>
+        <p className="text-[var(--color-gold)] font-serif text-xs sm:text-lg tracking-widest truncate">"{gameState.currentCipher}"</p>
       </div>
 
       {/* Main scrollable area */}

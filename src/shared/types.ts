@@ -27,7 +27,7 @@ export interface JournalEntry {
   receivedCard: Card;
 }
 
-export type GamePhase = "Lobby" | "RoleReveal" | "Dealing" | "MotifReveal" | "DancePairing" | "PrivateDance" | "GossipSalon" | "EliminationVote" | "GameOver";
+export type GamePhase = "Lobby" | "RoleReveal" | "Dealing" | "CipherReveal" | "DancePairing" | "PrivateDance" | "GossipSalon" | "EliminationVote" | "GameOver";
 
 export interface GameState {
   roomId: string;
@@ -36,9 +36,9 @@ export interface GameState {
   phase: GamePhase;
   round: number;
   maxRounds: number;
-  allianceMotifs: Record<string, string>;
+  allianceCiphers: Record<string, string>;
   allianceKeywords: Record<string, string[]>;
-  currentMotif?: string | null;
+  currentCipher?: string | null;
   minorityPenaltyRound: boolean;
   dancePairs: Record<string, string>;
   danceRequests: Record<string, string>;
@@ -53,9 +53,9 @@ export interface GameState {
   forcedEliminationChooserId?: string | null;
   forcedEliminationCandidates?: string[];
   coWinners?: string[];
-  usedMotifs?: string[];
-  revealMotifDuringDiscussion: boolean;
-  revealMotifDuringElimination: boolean;
+  usedCiphers?: string[];
+  revealCipherDuringDiscussion: boolean;
+  revealCipherDuringElimination: boolean;
   tiebreakerStage?: "None" | "Revote" | "AllianceGuess";
   tiebreakerTiedPlayerIds?: string[];
   allianceGuesses?: Record<string, "Majority" | "Minority">;
@@ -81,7 +81,7 @@ export interface ClientGameState {
   players: Record<string, ClientPlayer>;
   phase: GamePhase;
   round: number;
-  currentMotif: string | null;
+  currentCipher: string | null;
   dancePairs: Record<string, string>;
   danceRequests: Record<string, string>;
   sharedCards: Record<string, Card>;
@@ -95,9 +95,9 @@ export interface ClientGameState {
   forcedEliminationChooserId?: string | null;
   forcedEliminationCandidates?: string[];
   coWinners?: string[];
-  revealedAllianceMotifs?: Record<string, string>;
-  revealMotifDuringDiscussion: boolean;
-  revealMotifDuringElimination: boolean;
+  revealedAllianceCiphers?: Record<string, string>;
+  revealCipherDuringDiscussion: boolean;
+  revealCipherDuringElimination: boolean;
   tiebreakerStage?: "None" | "Revote" | "AllianceGuess";
   tiebreakerTiedPlayerIds?: string[];
   allianceGuesses?: Record<string, "Majority" | "Minority">;
