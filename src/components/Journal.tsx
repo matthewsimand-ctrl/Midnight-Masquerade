@@ -16,10 +16,10 @@ export function Journal({ isOpen, onClose }: JournalProps) {
 
   return (
     <div
-      className={`fixed right-0 bg-[var(--color-velvet)] border-l-2 border-[var(--color-gold)]/40 flex flex-col transition-transform duration-500 ease-in-out z-40 ${
-        isOpen ? "translate-x-0" : "translate-x-[320px]"
+      className={`fixed top-[92px] sm:top-[52px] right-0 bg-[var(--color-velvet)] border-l-2 border-[var(--color-gold)]/40 flex flex-col transition-transform duration-500 ease-in-out z-40 ${
+        isOpen ? "translate-x-0" : "translate-x-full"
       }`}
-      style={{ width: "320px", top: "52px", bottom: 0 }}
+      style={{ width: "min(100vw, 320px)", bottom: 0 }}
     >
       <div className="velvet-texture"></div>
 
