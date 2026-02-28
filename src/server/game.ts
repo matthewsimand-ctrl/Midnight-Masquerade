@@ -113,15 +113,23 @@ export function setupGameSocket(io: Server) {
   io.on("connection", (socket: Socket) => {
     console.log("Client connected:", socket.id);
 
-    socket.on("joinRoom", ({ roomId, name, avatar, intent }: { roomId: string, name: string, avatar: string, intent?: "create" | "join" }) => {
-      const action = intent || "join";
+  socket.on("joinRoom", ({ roomId, name, avatar, intent }) => {
+  const action = intent || "join";
+  let resolvedRoomId = roomId;
 
-      if (!rooms[roomId]) {
-        if (action === "join") {
-          socket.emit("error", "Room not found. Check the room code and try again.");
-          return;
-        }
-
+  if (action === "create") {
+    // Generate a guaranteed-unique room code server-side
+    do {
+      resolvedRoomId = generateRoomCode(); // move generateRoomCode to server
+    } while (rooms[resolvedRoomId]);
+    // Now create the room with the unique code
+  } else {
+    // "join" — room must already exist
+    if (!rooms[resolvedRoomId]) {
+      socket.emit("error", "Room not found. Check the room code and try again.");
+      return;
+    }
+  }
         rooms[roomId] = {
           roomId,
           hostId: socket.id,
@@ -862,6 +870,15 @@ function applyEliminations(io: Server, roomId: string, eliminatedIds: string[]) 
   broadcastState(io, roomId);
 }
 
+function generateRoomCode(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
+
 function applyElimination(io: Server, roomId: string, eliminatedId: string) {
   const game = rooms[roomId];
   if (!game || (game.players[eliminatedId].isEliminated && game.eliminatedThisRound !== eliminatedId)) return;
@@ -920,6 +937,6 @@ function applyElimination(io: Server, roomId: string, eliminatedId: string) {
       game.winner = "Minority";
     }
   }
-
+  
   broadcastState(io, roomId);
 }
