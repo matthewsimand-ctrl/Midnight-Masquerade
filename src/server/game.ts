@@ -775,24 +775,28 @@ function resolveVote(io: Server, roomId: string) {
       return;
     }
 
-    const activeMajorityIds = getForcedMajorityCandidates(game, eliminatedId);
-    game.forcedEliminationChooserId = eliminatedId;
-    game.forcedEliminationCandidates = activeMajorityIds;
+    // Get other active Majority players (excluding the voted one and any already eliminated)
+    const activeMajorityIds = getForcedMajorityCandidates(game, eliminatedId).filter(
+      id => !game.players[id]?.isEliminated
+    );
 
     if (activeMajorityIds.length === 0) {
+      // No other Majority players to eliminate — just eliminate the voted lion directly
       game.forcedEliminationChooserId = null;
       game.forcedEliminationCandidates = [];
-      game.votes = {};
-      broadcastState(io, roomId);
+      applyElimination(io, roomId, eliminatedId);
       return;
     }
 
-    if (game.players[eliminatedId].isBot && activeMajorityIds.length > 0) {
+    // Bot chooser: auto-select a random candidate
+    if (game.players[eliminatedId].isBot) {
       const selectedTarget = activeMajorityIds[Math.floor(Math.random() * activeMajorityIds.length)];
       applyElimination(io, roomId, selectedTarget);
       return;
     }
 
+    game.forcedEliminationChooserId = eliminatedId;
+    game.forcedEliminationCandidates = activeMajorityIds;
     broadcastState(io, roomId);
     return;
   }
