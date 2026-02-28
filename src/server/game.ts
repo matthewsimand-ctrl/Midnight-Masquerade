@@ -797,6 +797,10 @@ function resolveVote(io: Server, roomId: string) {
 
     game.forcedEliminationChooserId = eliminatedId;
     game.forcedEliminationCandidates = activeMajorityIds;
+    // Reset tiebreaker state so subsequent resolveVote calls (if any) don't
+    // incorrectly apply stale Revote vote-filtering logic
+    game.tiebreakerStage = "None";
+    game.tiebreakerTiedPlayerIds = [];
     broadcastState(io, roomId);
     return;
   }
