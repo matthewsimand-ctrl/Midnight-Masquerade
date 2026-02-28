@@ -4,6 +4,9 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { setupGameSocket } from "./src/server/game.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -29,7 +32,7 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    app.use(express.static("dist"));
+    app.use(express.static(path.join(__dirname, "../dist")));
   }
 
   httpServer.listen(PORT, "0.0.0.0", () => {
