@@ -156,11 +156,11 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
                 onClick={() => {
                   if (name) {
                     if (mode === "create") {
-                      onJoin(normalizeRoomId(generateRoomCode()), name);
+                      onJoin(normalizeRoomId(generateRoomCode()), name, "create");
                     } else {
                       const normalizedRoomId = normalizeRoomId(roomId);
                       if (normalizedRoomId) {
-                        onJoin(normalizedRoomId, name);
+                        onJoin(normalizedRoomId, name, "join");
                       } else {
                         alert("Please enter a room code.");
                       }
