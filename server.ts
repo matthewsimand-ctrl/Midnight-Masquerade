@@ -3,16 +3,16 @@ import { createServer as createViteServer } from "vite";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { setupGameSocket } from "./src/server/game.js";
-import path from "path"; // ADDED
-import { fileURLToPath } from "url"; // ADDED
+import path from "path";
+import { fileURLToPath } from "url";
 
-// ADDED FOR ESM
+// Recreate __dirname and __filename for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
-  // FIX: Use Render's PORT
+  // Use Render's dynamically assigned port, fallback to 3000 locally
   const PORT = process.env.PORT || 3000; 
   const httpServer = createServer(app);
   const io = new Server(httpServer, {
@@ -21,14 +21,15 @@ async function startServer() {
     },
   });
 
-  // API routes FIRST
+  // API routes MUST come before static file serving and the catch-all
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
   });
 
+  // Initialize your socket logic
   setupGameSocket(io);
 
-  // Vite middleware for development
+  // Serve frontend: Vite for dev, static files for production
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -36,13 +37,13 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // Corrected path
-    app.use(express.static(path.join(__dirname, "../dist")));
+    // FIX: Look in the current directory for "dist", not one level up
+    app.use(express.static(path.join(__dirname, "dist")));
   }
 
-  // ADDED: Fallback to index.html for React Router
+  // FIX: Fallback to index.html to support React Router client-side routing
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../dist/index.html"));
+    res.sendFile(path.join(__dirname, "dist/index.html"));
   });
 
   httpServer.listen(PORT, "0.0.0.0", () => {
