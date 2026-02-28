@@ -12,19 +12,6 @@ import { Journal } from "./components/Journal.js";
 import { GameHeader } from "./components/GameHeader.js";
 import { RulesModal } from "./components/RulesModal.js";
 
-// ─── Room code generation ──────────────────────────────────────────────────
-// Uses a timestamp-seeded suffix to prevent collisions when multiple rooms
-// are created in quick succession.
-function generateRoomCode() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no ambiguous chars
-  const timestampPart = Date.now().toString(36).slice(-2).toUpperCase();
-  let random = "";
-  for (let i = 0; i < 4; i++) {
-    random += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return (random + timestampPart).slice(0, 6); // 6-char code, timestamp-salted
-}
-
 function normalizeRoomId(value: string) {
   return value.replace(/\s+/g, "").toUpperCase();
 }
@@ -154,19 +141,20 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string, intent: "crea
 
               <button
                 onClick={() => {
-                  if (name) {
-                    if (mode === "create") {
-                      onJoin(normalizeRoomId(generateRoomCode()), name, "create");
-                    } else {
-                      const normalizedRoomId = normalizeRoomId(roomId);
-                      if (normalizedRoomId) {
-                        onJoin(normalizedRoomId, name, "join");
-                      } else {
-                        alert("Please enter a room code.");
-                      }
-                    }
-                  } else {
+                  if (!name) {
                     alert("Please enter your name.");
+                    return;
+                  }
+                  if (mode === "create") {
+                    // Pass empty string — server generates the room code
+                    onJoin("", name, "create");
+                  } else {
+                    const normalizedRoomId = normalizeRoomId(roomId);
+                    if (!normalizedRoomId) {
+                      alert("Please enter a room code.");
+                      return;
+                    }
+                    onJoin(normalizedRoomId, name, "join");
                   }
                 }}
                 className="w-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] font-serif font-bold tracking-widest uppercase py-4 px-8 rounded shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-105 transition-transform mt-4"
@@ -196,7 +184,6 @@ export default function App() {
   const [joined, setJoined] = useState(false);
   const [showHand, setShowHand] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
-  // Journal state lifted up so GameHeader can control it
   const [journalOpen, setJournalOpen] = useState(false);
 
   useEffect(() => {
@@ -263,7 +250,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[var(--color-midnight)] text-[var(--color-ivory)] font-sans flex overflow-hidden">
-      {/* ── Persistent Game Header ── */}
       {showHeader && (
         <GameHeader
           onOpenJournal={() => setJournalOpen((v) => !v)}
@@ -311,7 +297,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Main content — push down when header is visible */}
       <div
         className="flex-1 flex flex-col relative"
         style={{ paddingTop: showHeader ? "52px" : "0" }}
@@ -319,13 +304,11 @@ export default function App() {
         {renderPhase()}
       </div>
 
-      {/* Journal — controlled by header button */}
       {gameState.phase !== "Lobby" &&
         gameState.phase !== "Dealing" && (
           <Journal isOpen={journalOpen} onClose={() => setJournalOpen(false)} />
         )}
 
-      {/* Hand Drawer */}
       {gameState.phase !== "Lobby" &&
         gameState.phase !== "Dealing" &&
         me &&
