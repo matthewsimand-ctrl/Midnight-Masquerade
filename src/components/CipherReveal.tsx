@@ -18,6 +18,17 @@ export function CipherReveal() {
   const me = Object.values(gameState.players).find(p => p.isMe);
   const isHost = me?.isHost;
 
+  // Eliminated players should not see the cipher
+  if (me?.isEliminated) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden">
+        <div className="velvet-texture"></div>
+        <h2 className="text-xl sm:text-2xl text-[var(--color-ash)] font-serif mb-4 uppercase tracking-widest z-10 text-center">You are eliminated.</h2>
+        <p className="text-[var(--color-ivory-antique)] z-10 text-center">The next round is beginning...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden">
       <div className="velvet-texture"></div>
