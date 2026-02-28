@@ -74,7 +74,7 @@ export function EliminationVote() {
 
   if (isForcedChooser && gameState.forcedEliminationCandidates && gameState.forcedEliminationCandidates.length > 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 bg-[var(--color-midnight)] relative overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
         <div className="velvet-texture"></div>
         <div className="z-10 text-center max-w-3xl w-full">
           <h2 className="text-3xl font-serif text-[var(--color-gold)] mb-3 uppercase tracking-widest">Your Name Was Called</h2>
@@ -133,7 +133,7 @@ export function EliminationVote() {
   if (gameState.eliminatedThisRound) {
     if (gameState.eliminatedThisRound === "NONE") {
       return (
-        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 bg-[var(--color-midnight)] relative overflow-hidden">
+        <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
           <div className="velvet-texture"></div>
           
           <div className="text-center max-w-2xl w-full z-10 animate-in fade-in duration-1000">
@@ -230,7 +230,7 @@ export function EliminationVote() {
     }
 
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 bg-[var(--color-midnight)] relative overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
         <div className="velvet-texture"></div>
         
         <div className="text-center max-w-2xl w-full z-10 animate-in fade-in duration-1000">
@@ -314,7 +314,7 @@ export function EliminationVote() {
 
   if (me?.isEliminated) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 bg-[var(--color-midnight)] relative overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
         <div className="velvet-texture"></div>
         <h2 className="text-2xl text-[var(--color-ash)] font-serif mb-4 uppercase tracking-widest z-10">You are eliminated.</h2>
         <p className="text-[var(--color-ivory-antique)] z-10">Watching the vote...</p>
@@ -332,12 +332,12 @@ export function EliminationVote() {
 
   if (isAllianceGuess && !me?.isEliminated) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 bg-[var(--color-midnight)] relative overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-crimson)]/10 to-transparent pointer-events-none" style={{ boxShadow: 'inset 0 0 100px rgba(156,28,43,0.2)' }}></div>
         <div className="velvet-texture"></div>
         
         <div className="text-center max-w-4xl w-full z-10">
-          <h2 className="text-2xl sm:text-3xl text-[var(--color-ivory)] font-serif mb-2 uppercase tracking-widest animate-in slide-in-from-top-8">Final Tiebreaker</h2>
+          <h2 className="text-3xl text-[var(--color-ivory)] font-serif mb-2 uppercase tracking-widest animate-in slide-in-from-top-8">Final Tiebreaker</h2>
           <p className="text-[var(--color-ash)] mb-8 italic font-serif">The vote is still tied. Everyone must guess their own alliance. Incorrect guesses will be eliminated.</p>
           
           <div className="flex justify-center gap-8 mb-12">
@@ -369,11 +369,11 @@ export function EliminationVote() {
             </button>
           </div>
 
-          <div className="min-h-20 mt-8 sm:mt-12 flex items-center justify-center px-2 text-center">
+          <div className="h-24 mt-12 flex items-center justify-center">
             {selectedGuess && !myGuess && (
               <button
                 onClick={() => submitAllianceGuess(selectedGuess)}
-                className="px-6 sm:px-8 py-3 sm:py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform animate-in slide-in-from-bottom-4"
+                className="px-8 py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform animate-in slide-in-from-bottom-4"
               >
                 Lock In Guess
               </button>
@@ -393,7 +393,7 @@ export function EliminationVote() {
             {isHost && allVotesLocked && (
               <button
                 onClick={() => advancePhase()}
-                className="px-6 sm:px-8 py-3 sm:py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform"
+                className="px-8 py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform"
               >
                 Resolve Guesses
               </button>
@@ -406,7 +406,7 @@ export function EliminationVote() {
 
   if (isRevote && amITied && !me?.isEliminated) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 bg-[var(--color-midnight)] relative overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
         <div className="velvet-texture"></div>
         <h2 className="text-3xl text-[var(--color-crimson)] font-serif mb-4 uppercase tracking-widest z-10 animate-pulse">You are on the block</h2>
         <p className="text-[var(--color-ivory-antique)] z-10 text-lg">The vote tied. The others are deciding your fate.</p>
@@ -423,13 +423,13 @@ export function EliminationVote() {
   }
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 bg-[var(--color-midnight)] relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--color-midnight)] relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-crimson)]/10 to-transparent pointer-events-none" style={{ boxShadow: 'inset 0 0 100px rgba(156,28,43,0.2)' }}></div>
       <div className="velvet-texture"></div>
       
       <div className="text-center max-w-4xl w-full z-10">
-        <h2 className="text-2xl sm:text-3xl text-[var(--color-ivory)] font-serif mb-2 uppercase tracking-widest animate-in slide-in-from-top-8">Choose Who to Unmask</h2>
-        <p className="text-[var(--color-ash)] mb-6 sm:mb-8 italic font-serif">Cast your vote. Someone must leave the ball. You cannot vote for yourself.</p>
+        <h2 className="text-3xl text-[var(--color-ivory)] font-serif mb-2 uppercase tracking-widest animate-in slide-in-from-top-8">Choose Who to Unmask</h2>
+        <p className="text-[var(--color-ash)] mb-8 italic font-serif">Cast your vote. Someone must leave the ball.</p>
         
         {gameState.revealedAllianceMotifs && (
           <div className="mb-8 rounded-lg border border-[var(--color-charcoal-warm)] bg-[var(--color-ballroom)]/80 p-5 text-left max-w-2xl mx-auto">
@@ -450,21 +450,20 @@ export function EliminationVote() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 justify-center max-w-3xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 justify-center max-w-3xl mx-auto">
           {activePlayers.map(p => {
             if (isRevote && !tiedIds.includes(p.id)) return null;
             
             const isSelected = selectedVote === p.id || myVote === p.id;
             const isOtherSelected = (selectedVote || myVote) && !isSelected;
-            const isSelf = me?.id === p.id;
-            const canSelectTarget = !(isRevote && amITied) && !isSelf;
+            const canSelectTarget = !(isRevote && amITied);
 
             return (
               <button
                 key={p.id}
                 onClick={() => canSelectTarget && setSelectedVote(p.id)}
                 disabled={!canSelectTarget}
-                className={`p-4 sm:p-6 rounded-lg border transition-all flex flex-col items-center ${
+                className={`p-6 rounded-lg border transition-all flex flex-col items-center ${
                   isSelected 
                     ? 'bg-[var(--color-velvet)] border-[var(--color-crimson)] shadow-[0_0_20px_rgba(156,28,43,0.4)] scale-105' 
                     : isOtherSelected
@@ -472,7 +471,7 @@ export function EliminationVote() {
                       : 'bg-[var(--color-velvet)] border-[var(--color-charcoal-rich)] hover:border-[var(--color-crimson)]/50 hover:shadow-[0_0_15px_rgba(156,28,43,0.2)]'
                 } ${!canSelectTarget ? 'opacity-60 cursor-not-allowed' : ''}`}
               >
-                <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[var(--color-charcoal-rich)] mb-3 sm:mb-4 flex items-center justify-center text-2xl sm:text-3xl transition-all ${
+                <div className={`w-20 h-20 rounded-full bg-[var(--color-charcoal-rich)] mb-4 flex items-center justify-center text-3xl transition-all ${
                   isSelected ? 'border-2 border-[var(--color-crimson)] shadow-[0_0_15px_rgba(156,28,43,0.4)]' : ''
                 }`}>
                   {isImageAvatar(p.avatar) ? (
@@ -481,16 +480,13 @@ export function EliminationVote() {
                     p.avatar || "🎭"
                   )}
                 </div>
-                <h3 className={`text-sm sm:text-lg font-serif mb-1 text-center ${isSelected ? 'text-[var(--color-crimson)]' : 'text-[var(--color-ivory)]'}`}>
+                <h3 className={`text-lg font-serif mb-1 ${isSelected ? 'text-[var(--color-crimson)]' : 'text-[var(--color-ivory)]'}`}>
                   {p.name}
                 </h3>
                 {getAvatarLabel(p.avatar) && (
                   <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)] mb-1">
                     {getAvatarLabel(p.avatar)}
                   </p>
-                )}
-                {isSelf && !isSelected && (
-                  <span className="text-[10px] uppercase tracking-widest text-[var(--color-ash)] font-bold">Cannot self-vote</span>
                 )}
                 {isSelected && (
                   <span className="text-[10px] uppercase tracking-widest text-[var(--color-crimson)] font-bold animate-pulse">Accused</span>
@@ -500,11 +496,11 @@ export function EliminationVote() {
           })}
         </div>
 
-        <div className="min-h-20 mt-8 sm:mt-12 flex items-center justify-center px-2 text-center">
+        <div className="h-24 mt-12 flex items-center justify-center">
           {selectedVote && !myVote && !(isRevote && amITied) && (
             <button
               onClick={() => vote(selectedVote)}
-              className="px-6 sm:px-8 py-3 sm:py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform animate-in slide-in-from-bottom-4"
+              className="px-8 py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform animate-in slide-in-from-bottom-4"
             >
               Cast Accusation
             </button>
@@ -530,7 +526,7 @@ export function EliminationVote() {
           {isHost && allVotesLocked && (
             <button
               onClick={() => advancePhase()}
-              className="px-6 sm:px-8 py-3 sm:py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform"
+              className="px-8 py-4 rounded bg-gradient-to-br from-[var(--color-crimson)] to-[var(--color-crimson-active)] text-[var(--color-ivory)] font-serif font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(156,28,43,0.4)] hover:scale-105 transition-transform"
             >
               Resolve Vote
             </button>
