@@ -16,17 +16,17 @@ export function Journal({ isOpen, onClose }: JournalProps) {
 
   return (
     <div
-      className={`fixed top-[92px] sm:top-[52px] right-0 bg-[var(--color-velvet)] border-l-2 border-[var(--color-gold)]/40 flex flex-col transition-transform duration-500 ease-in-out z-40 ${
+      className={`fixed top-[96px] sm:top-[52px] right-0 bg-[var(--color-velvet)] border-l-2 border-[var(--color-gold)]/40 flex flex-col transition-transform duration-500 ease-in-out z-40 ${
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
       style={{ width: "min(100vw, 320px)", bottom: 0 }}
     >
       <div className="velvet-texture"></div>
 
-      <div className="p-6 border-b border-[var(--color-charcoal-warm)] relative z-10 flex items-center gap-3">
+      <div className="p-4 sm:p-6 border-b border-[var(--color-charcoal-warm)] relative z-10 flex items-center gap-3">
         <PenTool className="text-[var(--color-gold)]" size={20} />
         <div>
-          <h2 className="text-xl font-serif text-[var(--color-ivory)]">
+          <h2 className="text-lg sm:text-xl font-serif text-[var(--color-ivory)]">
             My Masque Journal
           </h2>
           <p className="text-xs text-[var(--color-ash)] uppercase tracking-widest mt-1">

@@ -23,12 +23,12 @@ export function Dealing() {
   const isHost = me?.isHost;
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8 relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden">
       <div className="velvet-texture"></div>
       
-      <h2 className="text-3xl font-serif text-[var(--color-gold)] mb-12 z-10 tracking-widest uppercase">Dealing Cards</h2>
+      <h2 className="text-2xl sm:text-3xl font-serif text-[var(--color-gold)] mb-8 sm:mb-12 z-10 tracking-widest uppercase text-center">Dealing Cards</h2>
       
-      <div className="relative w-48 h-72 z-10">
+      <div className="relative w-36 h-56 sm:w-48 sm:h-72 z-10">
         {/* Deck */}
         <div className="absolute inset-0 bg-[var(--color-velvet)] border-2 border-[var(--color-gold)]/30 rounded-md shadow-[0_0_30px_rgba(212,175,55,0.15)] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-gold)]/10 to-transparent"></div>
@@ -55,11 +55,11 @@ export function Dealing() {
         })}
       </div>
 
-      <div className="mt-24 z-10 h-16">
+      <div className="mt-12 sm:mt-24 z-10 h-16">
         {isHost && cardsDealt === 10 && (
           <button
             onClick={() => advancePhase()}
-            className="px-8 py-4 rounded bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] font-serif font-bold uppercase tracking-widest shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-105 transition-transform animate-in fade-in duration-500"
+            className="px-6 sm:px-8 py-3 sm:py-4 rounded bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] font-serif font-bold uppercase tracking-widest shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-105 transition-transform animate-in fade-in duration-500"
           >
             Reveal Motif
           </button>

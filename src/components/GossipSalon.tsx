@@ -53,12 +53,12 @@ export function GossipSalon() {
       />
 
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-8 py-4 border-b border-[var(--color-gold)]/20 z-10">
+      <div className="absolute top-0 left-0 right-0 flex items-start sm:items-center justify-between px-3 sm:px-8 py-3 sm:py-4 border-b border-[var(--color-gold)]/20 z-10 gap-3">
         <div>
           <p className="text-[10px] font-serif uppercase tracking-[0.25em] text-[var(--color-ash)]">
             Round {gameState.round}
           </p>
-          <h2 className="text-lg font-serif text-[var(--color-gold)] tracking-widest uppercase">
+          <h2 className="text-sm sm:text-lg font-serif text-[var(--color-gold)] tracking-widest uppercase">
             The Gossip Salon
           </h2>
         </div>
@@ -66,7 +66,7 @@ export function GossipSalon() {
         {isHost && (
           <button
             onClick={() => advancePhase()}
-            className="px-4 py-2 rounded bg-transparent border border-[var(--color-gold)]/40 text-[var(--color-gold)] font-serif text-xs uppercase tracking-widest hover:bg-[var(--color-gold)]/10 transition-colors"
+            className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded bg-transparent border border-[var(--color-gold)]/40 text-[var(--color-gold)] font-serif text-[10px] sm:text-xs uppercase tracking-widest hover:bg-[var(--color-gold)]/10 transition-colors shrink-0"
           >
             End Early
           </button>
@@ -74,7 +74,7 @@ export function GossipSalon() {
       </div>
 
       {/* Main content */}
-      <div className="flex flex-col items-center gap-12 z-10">
+      <div className="flex flex-col items-center gap-8 sm:gap-12 z-10 pt-20 sm:pt-12 pb-8">
 
         {/* Timer ring */}
         <div className="relative flex items-center justify-center">
@@ -150,7 +150,7 @@ export function GossipSalon() {
         )}
 
         {/* Player ring */}
-        <div className="flex flex-wrap justify-center gap-6 max-w-2xl px-8">
+        <div className="flex flex-wrap justify-center gap-4 sm:gap-6 max-w-2xl px-4 sm:px-8">
           {players.map((p) => (
             <div key={p.id} className="flex flex-col items-center gap-2">
               <div

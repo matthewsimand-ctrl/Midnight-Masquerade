@@ -259,7 +259,7 @@ export default function App() {
       {isHost && gameState.phase !== "Lobby" && gameState.phase !== "GameOver" && (
         <button
           onClick={() => setShowEndConfirm(true)}
-          className="fixed bottom-6 left-6 z-50 bg-[var(--color-charcoal-rich)] border border-[var(--color-crimson)]/50 text-[var(--color-ash)] hover:text-[var(--color-crimson)] px-3 py-1.5 rounded text-xs font-serif uppercase tracking-widest transition-colors shadow-lg"
+          className="fixed top-[104px] right-3 sm:top-auto sm:right-auto sm:bottom-6 sm:left-6 z-50 bg-[var(--color-charcoal-rich)] border border-[var(--color-crimson)]/50 text-[var(--color-ash)] hover:text-[var(--color-crimson)] px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded text-[10px] sm:text-xs font-serif uppercase tracking-widest transition-colors shadow-lg"
         >
           End Game
         </button>
@@ -298,8 +298,7 @@ export default function App() {
 
       {/* Main content — push down when header is visible */}
       <div
-        className="flex-1 flex flex-col relative"
-        style={{ paddingTop: showHeader ? "52px" : "0" }}
+        className={`flex-1 flex flex-col relative ${showHeader ? "pt-[96px] sm:pt-[52px]" : "pt-0"}`}
       >
         {renderPhase()}
       </div>
@@ -319,13 +318,13 @@ export default function App() {
           <>
             <button
               onClick={() => setShowHand(!showHand)}
-              className="fixed bottom-6 right-6 z-50 bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] px-6 py-3 rounded font-serif font-bold uppercase tracking-widest shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-105 transition-transform"
+              className="hidden sm:block fixed bottom-6 right-6 z-50 bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] px-6 py-3 rounded font-serif font-bold uppercase tracking-widest shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-105 transition-transform"
             >
               {showHand ? "Hide Hand" : "View Hand"}
             </button>
 
             <div
-              className={`fixed bottom-0 left-0 right-0 bg-[var(--color-ballroom)] border-t border-[var(--color-charcoal-warm)] p-6 z-40 transition-transform duration-300 ease-in-out ${
+              className={`hidden sm:block fixed bottom-0 left-0 right-0 bg-[var(--color-ballroom)] border-t border-[var(--color-charcoal-warm)] p-6 z-40 transition-transform duration-300 ease-in-out ${
                 showHand ? "translate-y-0" : "translate-y-full"
               }`}
             >

@@ -65,7 +65,7 @@ export function GameOver() {
   };
 
   return (
-    <div className={`flex-1 flex flex-col items-center justify-center p-8 relative overflow-hidden ${
+    <div className={`flex-1 flex flex-col items-center justify-start p-4 sm:p-8 relative overflow-y-auto ${
       isMajorityWin ? "bg-[var(--color-midnight)]" : "bg-[var(--color-midnight)]"
     }`}>
       {/* Background Effects */}
@@ -85,25 +85,25 @@ export function GameOver() {
         </svg>
       </div>
 
-      <div className="text-center max-w-4xl w-full z-10 animate-in slide-in-from-top-12 duration-1000">
-        <h1 className={`text-5xl md:text-7xl font-serif uppercase tracking-[0.1em] mb-4 ${
+      <div className="text-center max-w-4xl w-full z-10 animate-in slide-in-from-top-12 duration-1000 pt-10 sm:pt-0 pb-8">
+        <h1 className={`text-3xl sm:text-5xl md:text-7xl font-serif uppercase tracking-[0.1em] mb-4 ${
           isMajorityWin || isBattleRoyale ? "text-[var(--color-gold)] drop-shadow-[0_0_20px_rgba(212,175,55,0.5)]" : "text-[var(--color-ivory)] drop-shadow-[0_0_20px_rgba(245,240,232,0.5)]"
         }`}>
           {isBattleRoyale ? "BATTLE ROYALE COMPLETE" : isMajorityWin ? "LIONS TRIUMPH" : "SERPENTS PREVAIL"}
         </h1>
         
         {!isBattleRoyale && !isMajorityWin && (
-          <p className="text-xl font-serif italic text-[var(--color-ivory-antique)] mb-12">
+          <p className="text-base sm:text-xl font-serif italic text-[var(--color-ivory-antique)] mb-8 sm:mb-12">
             Against all odds, the serpents outmaneuvered the lions
           </p>
         )}
         {!isBattleRoyale && isMajorityWin && (
-          <p className="text-xl font-serif italic text-[var(--color-gold-light)] mb-12">
+          <p className="text-base sm:text-xl font-serif italic text-[var(--color-gold-light)] mb-8 sm:mb-12">
             The lions have purged the masquerade
           </p>
         )}
         {isBattleRoyale && (
-          <p className="text-xl font-serif italic text-[var(--color-gold-light)] mb-12">
+          <p className="text-base sm:text-xl font-serif italic text-[var(--color-gold-light)] mb-8 sm:mb-12">
             Two survivors remain. They are declared co-winners.
           </p>
         )}
@@ -115,7 +115,7 @@ export function GameOver() {
         )}
 
         {me && !me.isHost && (
-          <div className={`inline-block px-8 py-3 rounded-full border mb-12 font-serif tracking-widest uppercase ${
+          <div className={`inline-block px-5 sm:px-8 py-3 rounded-full border mb-8 sm:mb-12 font-serif tracking-widest uppercase ${
             iWon ? "border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold)]/10" : "border-[var(--color-ash)] text-[var(--color-ash)] bg-[var(--color-charcoal-warm)]/50"
           }`}>
             {iWon ? "You Survived the Night" : "Your Alliance Has Fallen"}
@@ -143,7 +143,7 @@ export function GameOver() {
           </div>
         )}
         
-        <div className="bg-[var(--color-velvet)]/80 backdrop-blur-md border border-[var(--color-charcoal-rich)] p-8 rounded-lg shadow-2xl mb-12 flex flex-col md:flex-row gap-8">
+        <div className="bg-[var(--color-velvet)]/80 backdrop-blur-md border border-[var(--color-charcoal-rich)] p-4 sm:p-8 rounded-lg shadow-2xl mb-8 sm:mb-12 flex flex-col md:flex-row gap-6 sm:gap-8">
           {/* Majority Column */}
           <div className={`flex-1 flex flex-col ${isMajorityWin ? "opacity-100" : "opacity-60 grayscale"}`}>
             <h3 className={`text-xl font-serif mb-6 border-b pb-4 uppercase tracking-widest ${
@@ -175,16 +175,16 @@ export function GameOver() {
           </div>
         </div>
 
-        <div className="flex justify-center gap-6">
+        <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 pb-6">
           <button
             onClick={() => endGame()}
-            className="px-8 py-4 rounded bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] font-serif font-bold uppercase tracking-widest shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-105 transition-transform"
+            className="px-6 sm:px-8 py-3 sm:py-4 rounded bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] font-serif font-bold uppercase tracking-widest shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-105 transition-transform"
           >
             Return to the Ball
           </button>
           <button
             onClick={() => window.location.href = '/'}
-            className="px-8 py-4 rounded bg-transparent border border-[var(--color-gold)]/50 text-[var(--color-gold)] font-serif uppercase tracking-widest hover:bg-[var(--color-gold)]/10 transition-colors"
+            className="px-6 sm:px-8 py-3 sm:py-4 rounded bg-transparent border border-[var(--color-gold)]/50 text-[var(--color-gold)] font-serif uppercase tracking-widest hover:bg-[var(--color-gold)]/10 transition-colors"
           >
             New Masquerade
           </button>
