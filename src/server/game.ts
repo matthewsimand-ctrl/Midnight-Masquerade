@@ -453,7 +453,7 @@ function broadcastState(io: Server, roomId: string) {
       players: {},
     };
 
-    if (game.phase !== "Lobby" && game.phase !== "Dealing" && game.phase !== "GossipSalon" && game.phase !== "GameOver" && player.alliance) {
+    if (game.phase !== "Lobby" && game.phase !== "Dealing" && game.phase !== "GossipSalon" && game.phase !== "GameOver" && player.alliance && !player.isEliminated) {
       clientState.currentCipher = game.allianceCiphers[player.alliance];
     }
 
