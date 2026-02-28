@@ -36,8 +36,8 @@ export function Lobby() {
     advancePhase,
     kickPlayer,
     setGameMode,
-    setRevealMotifDuringDiscussion,
-    setRevealMotifDuringElimination,
+    setRevealCipherDuringDiscussion,
+    setRevealCipherDuringElimination,
     leaveRoom,
   } = useGameStore();
   const [showRules, setShowRules] = useState(false);
@@ -227,22 +227,22 @@ export function Lobby() {
             </div>
 
             <div className="mb-4 space-y-3">
-              <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)]">Motif Reveal Settings</p>
+              <p className="text-[10px] uppercase tracking-widest text-[var(--color-ash)]">Cipher Reveal Settings</p>
 
               <SettingToggle
-                title="Reveal Motif during Discussion"
-                enabled={gameState.revealMotifDuringDiscussion}
+                title="Reveal Cipher during Discussion"
+                enabled={gameState.revealCipherDuringDiscussion}
                 disabled={!isHost}
-                helpText="If turned on, all players will see both Motifs before voting. If left off, motifs are not shown during discussion."
-                onToggle={() => isHost && setRevealMotifDuringDiscussion(!gameState.revealMotifDuringDiscussion)}
+                helpText="If turned on, all players will see both Ciphers before voting. If left off, ciphers are not shown during discussion."
+                onToggle={() => isHost && setRevealCipherDuringDiscussion(!gameState.revealCipherDuringDiscussion)}
               />
 
               <SettingToggle
-                title="Reveal Motif during Elimination"
-                enabled={gameState.revealMotifDuringElimination}
+                title="Reveal Cipher during Elimination"
+                enabled={gameState.revealCipherDuringElimination}
                 disabled={!isHost}
-                helpText="If turned on, all players will see both Motifs after a player is eliminated. If left off, players never see motifs."
-                onToggle={() => isHost && setRevealMotifDuringElimination(!gameState.revealMotifDuringElimination)}
+                helpText="If turned on, all players will see both Ciphers after a player is eliminated. If left off, players never see ciphers."
+                onToggle={() => isHost && setRevealCipherDuringElimination(!gameState.revealCipherDuringElimination)}
               />
             </div>
 

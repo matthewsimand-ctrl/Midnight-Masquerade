@@ -11,7 +11,7 @@ const getDisplayAvatar = (avatar?: string) => {
   return "🎭";
 };
 
-export function MotifReveal() {
+export function CipherReveal() {
   const { gameState, advancePhase } = useGameStore();
   if (!gameState) return null;
 
@@ -27,7 +27,7 @@ export function MotifReveal() {
           Round {gameState.round} Begins
         </h2>
 
-        {/* Motif banner */}
+        {/* Cipher banner */}
         <div className="w-full bg-gradient-to-r from-[var(--color-velvet)] via-[var(--color-charcoal-rich)] to-[var(--color-velvet)] border-y border-[var(--color-gold)]/30 relative flex items-center px-4 sm:px-8 py-4 sm:py-0 sm:h-[120px] animate-bloom overflow-hidden shadow-[0_0_40px_rgba(212,175,55,0.15)] rounded-sm">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--color-gold)]/10 to-transparent animate-shimmer w-[200%]"></div>
 
@@ -43,10 +43,10 @@ export function MotifReveal() {
 
             <div className="flex-1 text-left min-w-0">
               <p className="text-[var(--color-ash)] text-xs uppercase tracking-widest mb-1">
-                Your Motif
+                Your Cipher
               </p>
               <h1 className="text-xl sm:text-3xl font-serif text-[var(--color-gold)] font-bold mb-1 break-words leading-tight">
-                "{gameState.currentMotif}"
+                "{gameState.currentCipher}"
               </h1>
               <p className="text-[var(--color-ash)] text-xs sm:text-sm font-sans">
                 Your secret allegiance — share nothing directly

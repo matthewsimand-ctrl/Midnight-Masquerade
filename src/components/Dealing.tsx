@@ -61,7 +61,7 @@ export function Dealing() {
             onClick={() => advancePhase()}
             className="px-6 sm:px-8 py-3 sm:py-4 rounded bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-light)] text-[var(--color-midnight)] font-serif font-bold uppercase tracking-widest shadow-[0_0_24px_rgba(212,175,55,0.35)] hover:scale-105 transition-transform animate-in fade-in duration-500"
           >
-            Reveal Motif
+            Reveal Cipher
           </button>
         )}
       </div>

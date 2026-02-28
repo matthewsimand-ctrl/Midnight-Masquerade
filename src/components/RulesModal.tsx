@@ -41,12 +41,12 @@ const HOW_TO_PLAY_SECTIONS: Array<{ title: string; body: string[] }> = [
     body: [
       "The game is played over a series of rounds, consisting of six distinct phases.",
       "Phase 1: Role Assignment — Each player is assigned one of two roles, but these roles remain hidden even to the player themself: Lions are the majority and Serpents are the minority. Each player is then dealt 15 cards, a random combination of single words and images.",
-      "Phase 2: Motifs — Each player receives a Motif, which is a secret phrase. Players on the same team receive the same motif, while the opposing team receives a different motif.",
-      "Phase 3: The Dance — Players are randomly assigned to dance with another player to share cards. The player you share with will not be the same player whose card you receive. Your objective is to play a card that signals your allegiance based on your motif.",
-      "Phase 4: The Gossip Salon — After everyone has shared and received a card, players discuss who appears to share the same alliance. Important Note: players can never repeat words from their motif and should focus on how closely their card matches their motif or who they believe shares their motif.",
-      "Phase 5: The Voting Phase — Players cast a vote for who should be eliminated. Lions should try to vote out a Serpent and Serpents should try to vote out a Lion. Motif visibility during discussion and elimination depends on the lobby reveal settings.",
+      "Phase 2: Ciphers — Each player receives a Cipher, which is a secret phrase. Players on the same team receive the same cipher, while the opposing team receives a different cipher.",
+      "Phase 3: The Dance — Players are randomly assigned to dance with another player to share cards. The player you share with will not be the same player whose card you receive. Your objective is to play a card that signals your allegiance based on your cipher.",
+      "Phase 4: The Gossip Salon — After everyone has shared and received a card, players discuss who appears to share the same alliance. Important Note: players can never repeat words from their cipher and should focus on how closely their card matches their cipher or who they believe shares their cipher.",
+      "Phase 5: The Voting Phase — Players cast a vote for who should be eliminated. Lions should try to vote out a Serpent and Serpents should try to vote out a Lion. Cipher visibility during discussion and elimination depends on the lobby reveal settings.",
       "⚖️ Tiebreakers — If two or more players tie in votes, all players not on the elimination block must revote for one of the tied players. If this vote ties again, there is one final tiebreaking procedure depending on the game mode.",
-      "Phase 6: The Reset — After elimination, motifs are reset and each team receives a new one. Depending on the game mode, players either remain on the same team or alliances are reshuffled. Play continues until a win condition is met.",
+      "Phase 6: The Reset — After elimination, ciphers are reset and each team receives a new one. Depending on the game mode, players either remain on the same team or alliances are reshuffled. Play continues until a win condition is met.",
     ],
   },
   {

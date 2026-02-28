@@ -5,7 +5,7 @@ const PHASE_LABELS: Record<string, string> = {
   PrivateDance: "The Private Dance",
   GossipSalon: "The Gossip Salon",
   EliminationVote: "The Unmasking",
-  MotifReveal: "Motif Revealed",
+  CipherReveal: "Cipher Revealed",
   RoleReveal: "The Alliances",
   Dealing: "Dealing Cards",
 };
@@ -14,7 +14,7 @@ const PHASE_LABELS_SHORT: Record<string, string> = {
   PrivateDance: "Private Dance",
   GossipSalon: "Gossip Salon",
   EliminationVote: "Unmasking",
-  MotifReveal: "Motif",
+  CipherReveal: "Cipher",
   RoleReveal: "Alliances",
   Dealing: "Dealing",
 };
@@ -81,16 +81,16 @@ export function GameHeader({ onOpenJournal, journalOpen }: GameHeaderProps) {
           </span>
         </div>
 
-        {/* Motif — desktop only */}
-        {gameState.currentMotif && (
+        {/* Cipher — desktop only */}
+        {gameState.currentCipher && (
           <>
             <div className="hidden sm:block w-px h-4" style={{ background: "rgba(212,175,55,0.15)" }} />
             <div className="hidden sm:flex flex-col items-center">
               <span className="font-serif uppercase tracking-[0.18em] text-[8px]" style={{ color: "rgba(212,175,55,0.5)" }}>
-                Motif
+                Cipher
               </span>
               <span className="font-serif text-[11px] leading-tight max-w-[120px] truncate" style={{ color: "var(--color-ivory)" }}>
-                {gameState.currentMotif}
+                {gameState.currentCipher}
               </span>
             </div>
           </>
