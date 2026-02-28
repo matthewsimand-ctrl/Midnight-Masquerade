@@ -421,7 +421,7 @@ function broadcastState(io: Server, roomId: string) {
       revealMotifDuringDiscussion: game.revealMotifDuringDiscussion,
       revealMotifDuringElimination: game.revealMotifDuringElimination,
       revealedAllianceMotifs: (
-        ((game.phase === "GossipSalon" || (game.phase === "EliminationVote" && !game.eliminatedThisRound)) && game.revealMotifDuringDiscussion) ||
+        (game.phase === "GossipSalon" && game.revealMotifDuringDiscussion) ||
         ((game.phase === "GameOver" || game.eliminatedThisRound) && game.revealMotifDuringElimination)
       )
         ? game.allianceMotifs
@@ -587,12 +587,9 @@ function startPrivateDance(io: Server, roomId: string) {
   const activePlayers = Object.values(game.players).filter(p => !p.isEliminated).map(p => p.id);
   const shuffled = [...activePlayers].sort(() => Math.random() - 0.5);
   const pairs: Record<string, string> = {};
-
-  for (let i = 0; i + 1 < shuffled.length; i += 2) {
-    const first = shuffled[i];
-    const second = shuffled[i + 1];
-    pairs[first] = second;
-    pairs[second] = first;
+  
+  for (let i = 0; i < shuffled.length; i++) {
+    pairs[shuffled[i]] = shuffled[(i + 1) % shuffled.length];
   }
   game.dancePairs = pairs;
 
@@ -617,15 +614,17 @@ function startGossipSalon(io: Server, roomId: string) {
   game.phase = "GossipSalon";
   
   for (const playerId in game.dancePairs) {
-    const senderId = game.dancePairs[playerId];
-    const sharedCard = senderId ? game.sharedCards[senderId] : null;
-    if (senderId && sharedCard) {
-      game.players[playerId].journal.push({
-        round: game.round,
-        partnerId: senderId,
-        partnerName: game.players[senderId].name,
-        receivedCard: sharedCard
-      });
+    const senderId = Object.keys(game.dancePairs).find(id => game.dancePairs[id] === playerId);
+    if (senderId) {
+      const sharedCard = game.sharedCards[senderId];
+      if (sharedCard) {
+        game.players[playerId].journal.push({
+          round: game.round,
+          partnerId: senderId,
+          partnerName: game.players[senderId].name,
+          receivedCard: sharedCard
+        });
+      }
     }
   }
 
@@ -705,27 +704,29 @@ function resolveVote(io: Server, roomId: string) {
       return;
     }
 
-    if (game.gameMode === "BattleRoyale") {
-      game.tiebreakerStage = "AllianceGuess";
-      game.tiebreakerTiedPlayerIds = tiedLeaders;
-      game.votes = {};
-      game.allianceGuesses = {};
+    if (game.tiebreakerStage !== "AllianceGuess") {
+      if (game.gameMode === "BattleRoyale") {
+        game.tiebreakerStage = "AllianceGuess";
+        game.tiebreakerTiedPlayerIds = tiedLeaders;
+        game.votes = {};
+        game.allianceGuesses = {};
 
-      for (const pid of activePlayerIds) {
-        const p = game.players[pid];
-        if (!p.isBot) continue;
-        game.allianceGuesses[pid] = Math.random() < 0.5 ? "Majority" : "Minority";
+        for (const pid of activePlayerIds) {
+          const p = game.players[pid];
+          if (!p.isBot) continue;
+          game.allianceGuesses[pid] = Math.random() < 0.5 ? "Majority" : "Minority";
+        }
+
+        broadcastState(io, roomId);
+        return;
       }
 
-      broadcastState(io, roomId);
+      const lions = tiedLeaders.filter((id) => game.players[id].alliance === "Majority");
+      const pool = lions.length > 0 ? lions : tiedLeaders;
+      const eliminatedId = pool[Math.floor(Math.random() * pool.length)];
+      applyElimination(io, roomId, eliminatedId);
       return;
     }
-
-    const lions = tiedLeaders.filter((id) => game.players[id].alliance === "Majority");
-    const pool = lions.length > 0 ? lions : tiedLeaders;
-    const eliminatedId = pool[Math.floor(Math.random() * pool.length)];
-    applyElimination(io, roomId, eliminatedId);
-    return;
   }
 
   if (game.tiebreakerStage === "AllianceGuess") {
