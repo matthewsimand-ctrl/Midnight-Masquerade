@@ -25,6 +25,10 @@ function generateRoomCode() {
   return (random + timestampPart).slice(0, 6); // 6-char code, timestamp-salted
 }
 
+function normalizeRoomId(value: string) {
+  return value.replace(/\s+/g, "").toUpperCase();
+}
+
 function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
   const [name, setName] = useState("");
   const [roomId, setRoomId] = useState("");
@@ -142,7 +146,7 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
                     type="text"
                     placeholder="B00B5"
                     value={roomId}
-                    onChange={(e) => setRoomId(e.target.value.toUpperCase())}
+                    onChange={(e) => setRoomId(normalizeRoomId(e.target.value))}
                     className="w-full bg-[var(--color-velvet)] border border-[var(--color-charcoal-rich)] rounded px-4 py-3 text-[var(--color-ivory)] font-mono uppercase focus:outline-none focus:border-[var(--color-gold)]"
                   />
                 </div>
@@ -152,11 +156,14 @@ function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
                 onClick={() => {
                   if (name) {
                     if (mode === "create") {
-                      onJoin(generateRoomCode(), name);
-                    } else if (roomId) {
-                      onJoin(roomId, name);
+                      onJoin(normalizeRoomId(generateRoomCode()), name);
                     } else {
-                      alert("Please enter a room code.");
+                      const normalizedRoomId = normalizeRoomId(roomId);
+                      if (normalizedRoomId) {
+                        onJoin(normalizedRoomId, name);
+                      } else {
+                        alert("Please enter a room code.");
+                      }
                     }
                   } else {
                     alert("Please enter your name.");
