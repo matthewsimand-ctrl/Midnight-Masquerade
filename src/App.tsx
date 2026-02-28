@@ -29,7 +29,7 @@ function normalizeRoomId(value: string) {
   return value.replace(/\s+/g, "").toUpperCase();
 }
 
-function Home({ onJoin }: { onJoin: (roomId: string, name: string) => void }) {
+function Home({ onJoin }: { onJoin: (roomId: string, name: string, intent: "create" | "join") => void }) {
   const [name, setName] = useState("");
   const [roomId, setRoomId] = useState("");
   const [mode, setMode] = useState<"home" | "create" | "join">("home");
