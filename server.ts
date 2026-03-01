@@ -37,11 +37,13 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // FIX: Look in the current directory for "dist", not one level up
     app.use(express.static(path.join(__dirname, "dist")));
+    // Fallback: also serve the public folder directly
+    // This ensures homescreen.jpg and mask images are always available
+    app.use(express.static(path.join(__dirname, "public")));
   }
 
-  // FIX: Fallback to index.html to support React Router client-side routing
+  // Fallback to index.html to support React Router client-side routing
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "dist/index.html"));
   });
