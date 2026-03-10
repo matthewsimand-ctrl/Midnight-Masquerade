@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { toDisplayText } from "../shared/cardText.js";
 
 type CipherContent = { text: string; keywords: string[] };
 
@@ -29,7 +30,7 @@ const IMAGE_CARDS: Card[] = loadJsonFile<JsonCardContent>("../content/images.jso
 const WORD_CARDS: Card[] = loadJsonFile<JsonCardContent>("../content/words.json").map((word, i) => ({
   id: `w${i}`,
   type: "Word",
-  content: word,
+  content: toDisplayText(word),
 }));
 
 const rooms: Record<string, GameState> = {};

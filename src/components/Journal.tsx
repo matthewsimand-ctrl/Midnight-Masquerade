@@ -1,5 +1,6 @@
 import { useGameStore } from "../client/store.js";
 import { PenTool } from "lucide-react";
+import { toDisplayText } from "../shared/cardText.js";
 
 interface JournalProps {
   isOpen: boolean;
@@ -57,7 +58,7 @@ export function Journal({ isOpen, onClose }: JournalProps) {
                     <div className="h-5 bg-gradient-to-r from-[var(--color-gold)] to-transparent flex items-center px-1">
                       <span className="font-serif text-[7px] text-[var(--color-midnight)] tracking-widest">✶ IMAGE</span>
                     </div>
-                    <img src={entry.receivedCard.content} alt="Card" className="w-full flex-1 object-cover" referrerPolicy="no-referrer" />
+                    <img src={toDisplayText(entry.receivedCard.content)} alt="Card" className="w-full flex-1 object-cover" referrerPolicy="no-referrer" />
                   </>
                 ) : (
                   <>
@@ -65,7 +66,7 @@ export function Journal({ isOpen, onClose }: JournalProps) {
                       <span className="font-serif text-[7px] text-[var(--color-ivory)] tracking-widest">⦿ WORD</span>
                     </div>
                     <div className="flex-1 flex items-center justify-center p-2 bg-[var(--color-ballroom)] text-[var(--color-ivory)] font-serif italic text-sm text-center break-words border-y border-[var(--color-gold)]/30 my-2 mx-1">
-                      {entry.receivedCard.content}
+                      {toDisplayText(entry.receivedCard.content)}
                     </div>
                   </>
                 )}

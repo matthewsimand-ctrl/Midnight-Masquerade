@@ -1,5 +1,6 @@
 import { useGameStore } from "../client/store.js";
 import { useState, useEffect } from "react";
+import { toDisplayText } from "../shared/cardText.js";
 
 export function PrivateDance() {
   const { gameState, shareCard, advancePhase } = useGameStore();
@@ -83,7 +84,7 @@ export function PrivateDance() {
             <div className="h-7 bg-gradient-to-r from-[var(--color-gold)] to-transparent flex items-center px-2 flex-shrink-0">
               <span className="font-serif text-[9px] text-[var(--color-midnight)] tracking-widest">✶ IMAGE</span>
             </div>
-            <img src={card.content} alt="Card" className="w-full flex-1 object-cover" referrerPolicy="no-referrer" />
+            <img src={toDisplayText(card.content)} alt="Card" className="w-full flex-1 object-cover" referrerPolicy="no-referrer" />
           </>
         ) : (
           <>
@@ -91,7 +92,7 @@ export function PrivateDance() {
               <span className="font-serif text-[9px] text-[var(--color-ivory)] tracking-widest">⦿ WORD</span>
             </div>
             <div className="flex-1 flex items-center justify-center p-4 sm:p-6 bg-[var(--color-ballroom)] text-[var(--color-ivory)] font-serif italic text-lg sm:text-xl text-center break-words border-y border-[var(--color-gold)]/30 my-3 sm:my-4 mx-2">
-              {card.content}
+              {toDisplayText(card.content)}
             </div>
           </>
         )}
@@ -143,7 +144,7 @@ export function PrivateDance() {
                         <div className="h-5 bg-gradient-to-r from-[var(--color-gold)] to-transparent flex items-center px-1">
                           <span className="font-serif text-[7px] text-[var(--color-midnight)] tracking-widest">✶ IMAGE</span>
                         </div>
-                        <img src={card.content} alt="Card" className="w-full flex-1 object-cover" referrerPolicy="no-referrer" />
+                        <img src={toDisplayText(card.content)} alt="Card" className="w-full flex-1 object-cover" referrerPolicy="no-referrer" />
                       </>
                     ) : (
                       <>
@@ -151,7 +152,7 @@ export function PrivateDance() {
                           <span className="font-serif text-[7px] text-[var(--color-ivory)] tracking-widest">⦿ WORD</span>
                         </div>
                         <div className="flex-1 flex items-center justify-center p-1.5 sm:p-2 bg-[var(--color-ballroom)] text-[var(--color-ivory)] font-serif italic text-[10px] sm:text-xs text-center break-words border-y border-[var(--color-gold)]/30 my-1.5 mx-1">
-                          {card.content}
+                          {toDisplayText(card.content)}
                         </div>
                       </>
                     )}
