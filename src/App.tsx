@@ -11,6 +11,7 @@ import { GameOver } from "./components/GameOver.js";
 import { Journal } from "./components/Journal.js";
 import { GameHeader } from "./components/GameHeader.js";
 import { RulesModal } from "./components/RulesModal.js";
+import { toDisplayText } from "./shared/cardText.js";
 
 function normalizeRoomId(value: string) {
   return value.replace(/\s+/g, "").toUpperCase();
@@ -345,7 +346,7 @@ export default function App() {
                             </span>
                           </div>
                           <img
-                            src={card.content}
+                            src={toDisplayText(card.content)}
                             alt="Card"
                             className="w-full flex-1 object-cover"
                             referrerPolicy="no-referrer"
@@ -359,7 +360,7 @@ export default function App() {
                             </span>
                           </div>
                           <div className="flex-1 flex items-center justify-center p-6 bg-[var(--color-ballroom)] text-[var(--color-ivory)] font-serif italic text-xl text-center break-words border-y border-[var(--color-gold)]/30 my-4 mx-2">
-                            {card.content}
+                            {toDisplayText(card.content)}
                           </div>
                         </>
                       )}
